@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jafra-mart-config
+data:
+  JAFRA_MART_SEED: "20261019"
+  CATALOG_URL: http://catalog-search:8080
+  PRICING_URL: http://pricing:8080
+  INVENTORY_URL: http://inventory:8080
+  CART_URL: http://cart:8080
+  PAYMENTS_URL: http://payments:8080
+  ORDERS_URL: http://orders:8080
+  RECOMMENDATIONS_URL: http://recommendations:8080
+  REPORTS_URL: http://reports-worker:8080
+  STOREFRONT_URL: http://storefront:8080
+  LOADGEN_URL: http://loadgen:8080
+  SERVICE_URLS: catalog-search=http://catalog-search:8080,pricing=http://pricing:8080,inventory=http://inventory:8080,cart=http://cart:8080,payments=http://payments:8080,orders=http://orders:8080,recommendations=http://recommendations:8080,reports-worker=http://reports-worker:8080
