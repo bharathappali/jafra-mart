@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendations
+  labels:
+    app.kubernetes.io/name: recommendations
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: recommendations
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: recommendations
+        app.kubernetes.io/part-of: jafra-mart
+    spec:
+      terminationGracePeriodSeconds: 20
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 0
+        runAsNonRoot: true
+        fsGroup: 0
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: recommendations
+          image: quay.io/bharathappali/jafra-mart:v1-recommendations
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: jafra-mart-config
+          env:
+            - name: CONTAINER_NAME
+              value: recommendations
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: JAVA_OPTS
+              value: "-Xms384m -Xmx384m -XX:MaxMetaspaceSize=128m -XX:ReservedCodeCacheSize=64m -XX:MaxDirectMemorySize=32m -XX:NativeMemoryTracking=summary -XX:+EnableDynamicAgentLoading -XX:+ExitOnOutOfMemoryError -Xlog:gc:stdout:uptime,level,tags -Duser.timezone=UTC -Dfile.encoding=UTF-8 -XX:+UseZGC"
+          resources:
+            requests:
+              cpu: "0.40"
+              memory: 576Mi
+            limits:
+              cpu: "1.00"
+              memory: 832Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 3
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommendations
+spec:
+  selector:
+    app.kubernetes.io/name: recommendations
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

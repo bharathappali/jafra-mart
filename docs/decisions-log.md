@@ -28,3 +28,7 @@
 - §13.6: export-slot reduction on guard trip uses `Semaphore.tryAcquire()` to drop from 2 permits to 1; restore releases one permit.
 - §13.6 / Spring Boot 4.1.1: naive export uses `tools.jackson.databind.ObjectMapper` (Jackson 3 package) because Boot 4 no longer exposes `com.fasterxml.jackson.databind` on the compile classpath.
 - §13.6: naive export rows are lean (7 boxed fields, no nested items) so two concurrent 50k-row exports stay within the 256 MiB Parallel heap; full order projections OOMed under MiniLoad concurrency 2.
+- §10.7: recommendation candidates exclude `productId` itself; top-8 ties break by ascending SKU after descending score.
+- §10.7: `SimilarityEntry` bytes are counted as `16384 * Float.BYTES` per entry (embedding payload only).
+- §10.7: embedding floats are filled with `SplittableRandom(Integer.toUnsignedLong(key.hashCode()))`.
+- §10.7: missing `productId` is a required query param (Spring 400); unknown SKU → 404 `NOT_FOUND`.

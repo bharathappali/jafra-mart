@@ -1,0 +1,7 @@
+METHOD GET
+PATH /api/recommendations/cache
+EXPECT_STATUS 200
+EXPECT_JQ .evictionEnabled == true
+EXPECT_JQ .maxEntries == 1000
+EXPECT_JQ .entries >= 1
+EXPECT_JQ .bytes >= 65536

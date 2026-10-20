@@ -1,0 +1,6 @@
+METHOD GET
+PATH /api/recommendations?customerId=customer007&productId=SKU-00042&sessionId=abc
+EXPECT_STATUS 200
+EXPECT_JQ .productId == "SKU-00042"
+EXPECT_JQ (.items | length) == 8
+EXPECT_JQ .cache == "MISS"
