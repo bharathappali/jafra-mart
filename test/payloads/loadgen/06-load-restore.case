@@ -1,0 +1,5 @@
+METHOD PUT
+PATH /api/load
+BODY {"baseJps":12}
+EXPECT_STATUS 200
+EXPECT_JQ .baseJps == 12

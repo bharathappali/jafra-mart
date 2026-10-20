@@ -129,16 +129,18 @@ async function refreshConductor() {
     for (const s of list) {
       const card = document.createElement('article');
       card.className = 'card panel';
-      const state = s.state || 'IDLE';
+      const status = s.status || s;
+      const state = status.state || 'IDLE';
       const chips = (s.subsystems || []).map((n) =>
         `<span class="chip">${n} ${subsystemName(n)}</span>`).join(' ');
-      const intensity = s.currentIntensity ?? 0;
+      const intensity = status.currentIntensity ?? status.intensity ?? 0;
+      const guardTripped = !!(status.guard && status.guard.tripped);
       card.innerHTML = `
         <h3>${s.id} — ${s.title || s.name || ''}</h3>
         <div class="muted">${s.service || ''}</div>
         <div class="chips">${chips}</div>
         <div><span class="state-${state}">${state}</span>
-          ${s.guardTripped ? '<span class="chip warning">guard tripped</span>' : ''}</div>
+          ${guardTripped ? '<span class="chip warning">guard tripped</span>' : ''}</div>
         <div class="intensity-bar" aria-label="intensity"><span style="width:${intensity * 100}%"></span></div>
         <div class="field"><label for="int-${s.id}">Intensity</label>
           <input id="int-${s.id}" type="number" min="0.1" max="1" step="0.1" value="1.0"></div>
@@ -170,7 +172,7 @@ async function refreshConductor() {
     }
 
     let run = {};
-    try { run = await conductorFetch('/run'); } catch { run = {}; }
+    try { run = await conductorFetch('/runs/current'); } catch { run = {}; }
     $('run-status').textContent = run.runId
       ? `runId=${run.runId} elapsed=${formatElapsed(run.elapsedSeconds || 0)}`
       : 'No active run';
@@ -178,9 +180,19 @@ async function refreshConductor() {
     if (activeTab === 'timeline') {
       let timeline = [];
       let gt = [];
-      try { timeline = await conductorFetch('/timeline'); } catch { /* ignore */ }
+      try {
+        const tl = await conductorFetch('/timeline?script=default-30m');
+        timeline = Array.isArray(tl) ? tl : (tl.entries || []);
+      } catch { /* ignore */ }
       if (run.runId) {
-        try { gt = await conductorFetch('/ground-truth?runId=' + encodeURIComponent(run.runId)); } catch { /* ignore */ }
+        try {
+          const raw = await conductorFetch('/ground-truth?runId=' + encodeURIComponent(run.runId));
+          if (typeof raw === 'string') {
+            gt = raw.trim().split('\n').filter(Boolean).map((line) => JSON.parse(line));
+          } else if (Array.isArray(raw)) {
+            gt = raw;
+          }
+        } catch { /* ignore */ }
       }
       renderTimeline($('timeline-view'), timeline, gt, run);
       $('gt-link').href = '/api/admin/conductor/ground-truth?runId=' + encodeURIComponent(run.runId || '') + '&download=1';
@@ -240,7 +252,7 @@ async function init() {
   $('btn-filter-orders').addEventListener('click', refreshOrders);
   $('btn-run-script').addEventListener('click', async () => {
     try {
-      await conductorFetch('/run', {
+      await conductorFetch('/runs', {
         method: 'POST',
         body: JSON.stringify({
           script: 'default-30m',
@@ -255,7 +267,7 @@ async function init() {
     }
   });
   $('btn-stop-run').addEventListener('click', async () => {
-    try { await conductorFetch('/run/stop', { method: 'POST', body: '{}' }); refreshConductor(); }
+    try { await conductorFetch('/runs/current/stop', { method: 'POST', body: '{}' }); refreshConductor(); }
     catch { $('loadgen-notice').textContent = 'loadgen not deployed'; $('loadgen-notice').classList.remove('hidden'); }
   });
   $('btn-reset-all').addEventListener('click', async () => {

@@ -1,8 +1,6 @@
 # Scenarios
 
-Thirteen scenarios, S01–S13, cover Jafra subsystems 1–16. Subsystem 17 (endpoint latency) is not built in v1.
-
-After Jafra adds JDK 25 `jdk.MethodTiming` / `jdk.MethodTrace` support, configure method timing filters on the REST resource methods of catalog-search and orders. Every scenario already produces endpoint-latency changes that will become labels for subsystem 17.
+Thirteen scenarios, S01–S13, cover Jafra subsystems 1–16. Catalog metadata (name, title, service, subsystems, effects, expected.primary, expected.secondary) lives in `loadgen/src/main/resources/scripts/scenarios.json`.
 
 | Id | Name | Service | Subsystems |
 |---|---|---|---|
@@ -20,4 +18,6 @@ After Jafra adds JDK 25 `jdk.MethodTiming` / `jdk.MethodTrace` support, configur
 | S12 | vthread-pinning | payments, orders | 10 |
 | S13 | safepoint-ttsp | reports-worker | 11 |
 
-Each later branch fills in the mechanism, load, expected events, and app metric for the scenarios it owns.
+## Subsystem 17 (planned, not built)
+
+Do not implement in v1. After Jafra adds JDK 25 `jdk.MethodTiming` / `jdk.MethodTrace` support, configure method timing filters on the REST resource methods of catalog-search and orders. Every scenario above already produces endpoint-latency changes that will become labels for subsystem 17.

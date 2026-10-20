@@ -1,0 +1,6 @@
+# load snapshot
+METHOD GET
+PATH /api/load
+EXPECT_STATUS 200
+EXPECT_JQ .baseJps == 12
+EXPECT_JQ .journeysStarted >= 0

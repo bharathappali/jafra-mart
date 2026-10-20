@@ -50,7 +50,10 @@ for c in $COMPONENTS; do
   sleep 0.4
   code="$(curl -sS -o /tmp/jafra-mart-info.json -w '%{http_code}' --max-time 5 "http://127.0.0.1:${port}/api/info" || true)"
   [[ "$code" == "200" ]] || die "$c /api/info returned $code"
-  if curl -sf --max-time 5 "http://127.0.0.1:${port}/internal/scenarios" -o /tmp/jafra-mart-scenarios.json; then
+  # storefront returns 302 (empty) for /internal/scenarios; only parse real JSON arrays
+  if curl -sf --max-time 5 "http://127.0.0.1:${port}/internal/scenarios" -o /tmp/jafra-mart-scenarios.json \
+      && [[ -s /tmp/jafra-mart-scenarios.json ]] \
+      && jq -e 'type == "array"' /tmp/jafra-mart-scenarios.json >/dev/null 2>&1; then
     bad="$(jq -r '[.[] | select(.state != "IDLE")] | length' /tmp/jafra-mart-scenarios.json)"
     [[ "$bad" == "0" ]] || die "$c has a scenario that is not IDLE"
   fi

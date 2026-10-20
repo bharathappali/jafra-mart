@@ -19,6 +19,8 @@
     <module>services/recommendations</module>
     <module>services/orders</module>
     <module>services/storefront</module>
+    <module>loadgen</module>
   </modules>
 </project>
+
 

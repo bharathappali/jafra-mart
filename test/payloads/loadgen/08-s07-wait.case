@@ -1,0 +1,6 @@
+# wait for S07 to finish short phases
+SLEEP 20
+METHOD GET
+PATH /api/scenarios
+EXPECT_STATUS 200
+EXPECT_JQ map(select(.id=="S07"))[0].status.state == "IDLE"

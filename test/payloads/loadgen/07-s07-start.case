@@ -1,0 +1,7 @@
+# short manual S07 for ground-truth phase lines
+METHOD POST
+PATH /api/scenarios/S07/start
+BODY {"rampSeconds":5,"holdSeconds":5,"recoverSeconds":5,"intensity":1.0}
+EXPECT_STATUS 202
+EXPECT_JQ .id == "S07"
+EXPECT_JQ .state == "RAMPING"

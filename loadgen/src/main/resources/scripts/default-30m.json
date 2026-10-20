@@ -1,0 +1,19 @@
+{
+  "script": "default-30m",
+  "durationSeconds": 1800,
+  "entries": [
+    {"id":"S01","startAt":240, "ramp":60,"hold":180,"recover":60,"intensity":1.0},
+    {"id":"S02","startAt":300, "ramp":30,"hold":210,"recover":60,"intensity":1.0},
+    {"id":"S03","startAt":480, "ramp":60,"hold":180,"recover":60,"intensity":1.0},
+    {"id":"S04","startAt":600, "ramp":60,"hold":180,"recover":60,"intensity":1.0},
+    {"id":"S05","startAt":720, "ramp":120,"hold":180,"recover":60,"intensity":1.0},
+    {"id":"S06","startAt":840, "ramp":60,"hold":120,"recover":60,"intensity":1.0},
+    {"id":"S07","startAt":960, "ramp":30,"hold":180,"recover":30,"intensity":1.0},
+    {"id":"S08","startAt":1080,"ramp":60,"hold":180,"recover":60,"intensity":1.0},
+    {"id":"S09","startAt":1140,"ramp":60,"hold":180,"recover":60,"intensity":1.0},
+    {"id":"S10","startAt":1200,"ramp":60,"hold":180,"recover":60,"intensity":1.0},
+    {"id":"S11","startAt":1320,"ramp":30,"hold":180,"recover":30,"intensity":1.0},
+    {"id":"S12","startAt":1380,"ramp":30,"hold":180,"recover":30,"intensity":1.0},
+    {"id":"S13","startAt":1560,"ramp":30,"hold":120,"recover":30,"intensity":1.0}
+  ]
+}

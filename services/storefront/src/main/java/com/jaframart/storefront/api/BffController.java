@@ -60,7 +60,7 @@ public class BffController {
     if (category != null) {
       b.queryParam("category", category);
     }
-    return Downstream.get(catalog, b.build(true).toUriString());
+    return Downstream.get(catalog, encode(b));
   }
 
   @GetMapping("/catalog/search")
@@ -78,7 +78,7 @@ public class BffController {
     if (limit != null) {
       b.queryParam("limit", limit);
     }
-    return Downstream.get(catalog, b.build(true).toUriString());
+    return Downstream.get(catalog, encode(b));
   }
 
   @GetMapping("/catalog/products/{sku}")
@@ -105,7 +105,7 @@ public class BffController {
     if (size != null) {
       b.queryParam("size", size);
     }
-    ResponseEntity<byte[]> entity = Downstream.get(catalog, b.build(true).toUriString());
+    ResponseEntity<byte[]> entity = Downstream.get(catalog, encode(b));
     if (entity.getStatusCode().is2xxSuccessful()) {
       return ResponseEntity.status(entity.getStatusCode())
           .contentType(MediaType.IMAGE_PNG)
@@ -126,12 +126,10 @@ public class BffController {
       HttpSession session) {
     String customerId = authentication.getName();
     String sessionId = session.getId();
-    String uri = UriComponentsBuilder.fromPath("/api/recommendations")
+    String uri = encode(UriComponentsBuilder.fromPath("/api/recommendations")
         .queryParam("customerId", customerId)
         .queryParam("productId", productId)
-        .queryParam("sessionId", sessionId)
-        .build(true)
-        .toUriString();
+        .queryParam("sessionId", sessionId));
     return Downstream.get(recommendations, uri);
   }
 
@@ -197,16 +195,19 @@ public class BffController {
 
   @GetMapping("/orders/mine")
   public ResponseEntity<byte[]> myOrders(Authentication authentication) {
-    String uri = UriComponentsBuilder.fromPath("/api/orders")
+    String uri = encode(UriComponentsBuilder.fromPath("/api/orders")
         .queryParam("customerId", authentication.getName())
-        .queryParam("limit", 20)
-        .build(true)
-        .toUriString();
+        .queryParam("limit", 20));
     return Downstream.get(orders, uri);
   }
 
   @GetMapping("/inventory/{sku}")
   public ResponseEntity<byte[]> inventory(@PathVariable String sku) {
     return Downstream.get(inventory, "/api/inventory/" + sku);
+  }
+
+  /** Encode query values; {@code build(true)} rejects spaces in decoded params (§10.9). */
+  private static String encode(UriComponentsBuilder b) {
+    return b.encode().build().toUriString();
   }
 }

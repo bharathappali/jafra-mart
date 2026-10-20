@@ -1,0 +1,6 @@
+# adjust base jps then restore
+METHOD PUT
+PATH /api/load
+BODY {"baseJps":10}
+EXPECT_STATUS 200
+EXPECT_JQ .baseJps == 10

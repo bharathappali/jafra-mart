@@ -1,0 +1,9 @@
+# default-30m timeline has 13 entries
+METHOD GET
+PATH /api/timeline?script=default-30m
+EXPECT_STATUS 200
+EXPECT_JQ .script == "default-30m"
+EXPECT_JQ .durationSeconds == 1800
+EXPECT_JQ (.entries | length) == 13
+EXPECT_JQ .entries[0].id == "S01"
+EXPECT_JQ .entries[12].id == "S13"

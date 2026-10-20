@@ -11,3 +11,4 @@ EXPECT_JQ .items[0].sku == "SKU-00042"
 EXPECT_JQ .items[0].productName == "Frosted Glass Smart Lamp"
 EXPECT_JQ .items[0].unitPriceCents == 12999
 EXPECT_JQ .orderNumber | test("^JM-[0-9]{8}-[0-9]{6}$")
+CAPTURE_JQ orderNumber .orderNumber

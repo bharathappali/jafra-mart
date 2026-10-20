@@ -1,0 +1,9 @@
+# thirteen scenarios
+METHOD GET
+PATH /api/scenarios
+EXPECT_STATUS 200
+EXPECT_JQ length == 13
+EXPECT_JQ .[0].id == "S01"
+EXPECT_JQ .[12].id == "S13"
+EXPECT_JQ .[0].name == "cpu-flash-sale"
+EXPECT_JQ .[6].id == "S07"

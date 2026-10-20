@@ -38,6 +38,20 @@ cleanup() {
 trap cleanup EXIT
 
 fail=0
+# bash 3.2 (macOS) has no associative arrays; store captures as NAME=VALUE lines
+captures_file="$(mktemp)"
+subst_captures() {
+  local text="$1" line name value
+  text="${text//\{utcDate\}/$(date -u +%Y%m%d)}"
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ -z "$line" ]] && continue
+    name="${line%%=*}"
+    value="${line#*=}"
+    text="${text//\{$name\}/$value}"
+  done < "$captures_file"
+  printf '%s' "$text"
+}
+
 for c in "$@"; do
   if [[ "$c" == "storefront" ]]; then
     base="http://127.0.0.1:30080"
@@ -56,6 +70,7 @@ for c in "$@"; do
     done
   fi
   jar="$(mktemp)"
+  : > "$captures_file"
   shopt -s nullglob
   cases=( "$ROOT"/test/payloads/"$c"/*.case )
   shopt -u nullglob
@@ -72,7 +87,9 @@ for c in "$@"; do
     headers=()
     expect_headers=()
     expect_jq=()
+    capture_jq=()
     prefix=""
+    sleep_s=0
     while IFS= read -r line || [[ -n "$line" ]]; do
       [[ -z "$line" || "$line" == \#* ]] && continue
       key="${line%% *}"
@@ -85,10 +102,16 @@ for c in "$@"; do
         HEADER) headers+=("$value") ;;
         EXPECT_HEADER) expect_headers+=("$value") ;;
         EXPECT_JQ) expect_jq+=("$value") ;;
+        CAPTURE_JQ) capture_jq+=("$value") ;;
         EXPECT_BYTES_PREFIX) prefix="$value" ;;
+        SLEEP) sleep_s="$value" ;;
         *) die "bad case line in $file: $line" ;;
       esac
     done < "$file"
+    if (( sleep_s > 0 )); then
+      sleep "$sleep_s"
+    fi
+    path="$(subst_captures "$path")"
     out="$(mktemp)"
     hdr="$(mktemp)"
     args=(-sS -D "$hdr" -o "$out" -w '%{http_code}' -X "$method" -b "$jar" -c "$jar")
@@ -105,10 +128,27 @@ for c in "$@"; do
       ok=0
     fi
     if ((${#expect_jq[@]} > 0)); then
+      jq_args=(-e)
+      if grep -qi '^content-type:.*ndjson' "$hdr" || [[ "$path" == *ground-truth* ]]; then
+        jq_args=(-s -e)
+      fi
       for expr in "${expect_jq[@]}"; do
-        if ! jq -e "$expr" "$out" >/dev/null; then
+        expr="$(subst_captures "$expr")"
+        if ! jq "${jq_args[@]}" "$expr" "$out" >/dev/null; then
           ok=0
         fi
+      done
+    fi
+    if ((${#capture_jq[@]} > 0)) && [[ "$ok" == 1 ]]; then
+      for cap in "${capture_jq[@]}"; do
+        cname="${cap%% *}"
+        cexpr="${cap#* }"
+        # replace existing capture line if present
+        if grep -q "^${cname}=" "$captures_file" 2>/dev/null; then
+          grep -v "^${cname}=" "$captures_file" > "${captures_file}.tmp" || true
+          mv "${captures_file}.tmp" "$captures_file"
+        fi
+        printf '%s=%s\n' "$cname" "$(jq -r "$cexpr" "$out")" >> "$captures_file"
       done
     fi
     if ((${#expect_headers[@]} > 0)); then
@@ -137,5 +177,6 @@ for c in "$@"; do
   done
   rm -f "$jar"
 done
+rm -f "$captures_file"
 
 exit "$fail"

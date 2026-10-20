@@ -1,0 +1,5 @@
+# manual ground truth contains S07 phase lines
+METHOD GET
+PATH /api/ground-truth?runId=manual-{utcDate}
+EXPECT_STATUS 200
+EXPECT_JQ [.[] | select(.type=="phase" and .scenarioId=="S07")] | length >= 1

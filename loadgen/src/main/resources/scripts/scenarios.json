@@ -1,0 +1,306 @@
+[
+  {
+    "id": "S01",
+    "name": "cpu-flash-sale",
+    "title": "Flash sale overloads search",
+    "service": "catalog-search",
+    "subsystems": [1],
+    "effects": [
+      {"service": "catalog-search", "subsystems": [1]},
+      {"service": "storefront", "subsystems": [14]}
+    ],
+    "expected": {
+      "primary": [
+        "jdk.ContainerCPUThrottling",
+        "jdk.ExecutionSample(AP)",
+        "profiler.WallClockSample(AP)"
+      ],
+      "secondary": [
+        "jdk.ContainerCPUUsage",
+        "jdk.CPULoad",
+        "jdk.ThreadCPULoad",
+        "jdk.ContainerConfiguration"
+      ]
+    }
+  },
+  {
+    "id": "S02",
+    "name": "lock-hot-sku",
+    "title": "Hot SKU waitlist under monitor",
+    "service": "inventory",
+    "subsystems": [8],
+    "effects": [
+      {"service": "inventory", "subsystems": [8]},
+      {"service": "orders", "subsystems": [14]}
+    ],
+    "expected": {
+      "primary": [
+        "jdk.JavaMonitorEnter(AP)",
+        "profiler.WallClockSample(AP)"
+      ],
+      "secondary": [
+        "jdk.ThreadStart",
+        "jdk.JavaThreadStatistics",
+        "jdk.JavaMonitorInflate",
+        "jdk.ThreadCPULoad"
+      ]
+    }
+  },
+  {
+    "id": "S03",
+    "name": "socket-slow-payments",
+    "title": "Card acquirer degrades",
+    "service": "payments",
+    "subsystems": [14],
+    "effects": [
+      {"service": "payments", "subsystems": [14]},
+      {"service": "orders", "subsystems": [14]}
+    ],
+    "expected": {
+      "primary": [
+        "jdk.SocketRead",
+        "profiler.WallClockSample(AP)"
+      ],
+      "secondary": [
+        "jdk.ThreadStart",
+        "jdk.JavaThreadStatistics"
+      ]
+    }
+  },
+  {
+    "id": "S04",
+    "name": "threads-burst-pools",
+    "title": "Checkout burst pools leak threads",
+    "service": "orders",
+    "subsystems": [9],
+    "effects": [
+      {"service": "orders", "subsystems": [9]}
+    ],
+    "expected": {
+      "primary": [
+        "jdk.ThreadStart",
+        "jdk.JavaThreadStatistics",
+        "jdk.ThreadEnd"
+      ],
+      "secondary": [
+        "jdk.NativeMemoryUsage",
+        "jdk.ResidentSetSize",
+        "profiler.WallClockSample(AP)"
+      ]
+    }
+  },
+  {
+    "id": "S05",
+    "name": "heap-recs-cache",
+    "title": "Recommendation cache retains heap",
+    "service": "recommendations",
+    "subsystems": [2, 3],
+    "effects": [
+      {"service": "recommendations", "subsystems": [2, 3]}
+    ],
+    "expected": {
+      "primary": [
+        "jdk.GCHeapSummary",
+        "jdk.ZYoungGarbageCollection",
+        "jdk.ZOldGarbageCollection",
+        "jdk.GarbageCollection",
+        "jdk.ObjectAllocationInNewTLAB(AP)",
+        "jdk.ObjectAllocationOutsideTLAB(AP)",
+        "profiler.LiveObject(AP)"
+      ],
+      "secondary": [
+        "jdk.ZAllocationStall",
+        "jdk.GCPhasePause",
+        "jdk.GCCPUTime",
+        "jdk.GCHeapMemoryUsage"
+      ]
+    }
+  },
+  {
+    "id": "S06",
+    "name": "gc-export-churn",
+    "title": "Naive export churns young GC",
+    "service": "reports-worker",
+    "subsystems": [3, 2],
+    "effects": [
+      {"service": "reports-worker", "subsystems": [3, 2]}
+    ],
+    "expected": {
+      "primary": [
+        "jdk.ObjectAllocationInNewTLAB(AP)",
+        "jdk.ObjectAllocationOutsideTLAB(AP)",
+        "jdk.YoungGarbageCollection",
+        "jdk.GarbageCollection",
+        "jdk.GCHeapSummary",
+        "jdk.PSHeapSummary"
+      ],
+      "secondary": [
+        "jdk.ParallelOldGarbageCollection",
+        "jdk.GCPhasePause",
+        "jdk.ThreadAllocationStatistics",
+        "jdk.ExecutionSample(AP)"
+      ]
+    }
+  },
+  {
+    "id": "S07",
+    "name": "exceptions-coupon-storm",
+    "title": "Coupon guessing storm",
+    "service": "cart",
+    "subsystems": [16],
+    "effects": [
+      {"service": "cart", "subsystems": [16]}
+    ],
+    "expected": {
+      "primary": [
+        "jdk.ExceptionStatistics",
+        "jdk.ExecutionSample(AP)"
+      ],
+      "secondary": [
+        "jdk.JavaExceptionThrow",
+        "jdk.ObjectAllocationInNewTLAB(AP)",
+        "jdk.ContainerCPUThrottling"
+      ]
+    }
+  },
+  {
+    "id": "S08",
+    "name": "metaspace-campaign-classes",
+    "title": "Campaign hidden classes fill metaspace",
+    "service": "pricing",
+    "subsystems": [4, 13],
+    "effects": [
+      {"service": "pricing", "subsystems": [4, 13]}
+    ],
+    "expected": {
+      "primary": [
+        "jdk.ClassLoadingStatistics",
+        "jdk.ClassLoad",
+        "jdk.ClassUnload",
+        "jdk.MetaspaceSummary",
+        "jdk.MetaspaceGCThreshold",
+        "jdk.GarbageCollection",
+        "jdk.OldGarbageCollection"
+      ],
+      "secondary": [
+        "jdk.MetaspaceAllocationFailure",
+        "jdk.SystemGC",
+        "jdk.ExecutionSample(AP)"
+      ]
+    }
+  },
+  {
+    "id": "S09",
+    "name": "jit-deopt-codecache",
+    "title": "Pricing pipes deopt and fill code cache",
+    "service": "pricing",
+    "subsystems": [12, 5],
+    "effects": [
+      {"service": "pricing", "subsystems": [12, 5]}
+    ],
+    "expected": {
+      "primary": [
+        "jdk.Deoptimization",
+        "jdk.CodeCacheStatistics",
+        "jdk.CompilerStatistics",
+        "jdk.CompilerQueueUtilization"
+      ],
+      "secondary": [
+        "jdk.Compilation",
+        "jdk.CodeCacheFull",
+        "jdk.CompilationFailure",
+        "jdk.ClassLoad",
+        "jdk.ClassUnload",
+        "jdk.ExecutionSample(AP)"
+      ]
+    }
+  },
+  {
+    "id": "S10",
+    "name": "native-thumbnails",
+    "title": "Thumbnail arenas and disk mirror",
+    "service": "catalog-search",
+    "subsystems": [6, 7],
+    "effects": [
+      {"service": "catalog-search", "subsystems": [6, 7]}
+    ],
+    "expected": {
+      "primary": [
+        "jdk.NativeMemoryUsage",
+        "jdk.NativeMemoryUsageTotal",
+        "jdk.ResidentSetSize",
+        "jdk.ContainerMemoryUsage",
+        "profiler.Malloc(AP)",
+        "profiler.Free(AP)"
+      ],
+      "secondary": [
+        "jdk.GCHeapSummary",
+        "jdk.FileWrite",
+        "jdk.ContainerIOUsage"
+      ]
+    }
+  },
+  {
+    "id": "S11",
+    "name": "file-fsync-invoices",
+    "title": "Durable invoices fsync every chunk",
+    "service": "reports-worker",
+    "subsystems": [15],
+    "effects": [
+      {"service": "reports-worker", "subsystems": [15]}
+    ],
+    "expected": {
+      "primary": [
+        "profiler.WallClockSample(AP)",
+        "jdk.FileForce"
+      ],
+      "secondary": [
+        "jdk.FileWrite",
+        "jdk.ContainerIOUsage"
+      ]
+    }
+  },
+  {
+    "id": "S12",
+    "name": "vthread-pinning",
+    "title": "Native risk scorer pins carriers",
+    "service": "payments",
+    "subsystems": [10],
+    "effects": [
+      {"service": "payments", "subsystems": [10]},
+      {"service": "orders", "subsystems": [14]}
+    ],
+    "expected": {
+      "primary": [
+        "jdk.VirtualThreadPinned",
+        "profiler.WallClockSample(AP)"
+      ],
+      "secondary": [
+        "jdk.SocketRead"
+      ]
+    }
+  },
+  {
+    "id": "S13",
+    "name": "safepoint-ttsp",
+    "title": "Reconciliation stalls time-to-safepoint",
+    "service": "reports-worker",
+    "subsystems": [11],
+    "effects": [
+      {"service": "reports-worker", "subsystems": [11]}
+    ],
+    "expected": {
+      "primary": [
+        "jdk.SafepointBegin",
+        "jdk.SafepointStateSynchronization",
+        "jdk.ExecuteVMOperation",
+        "jdk.ExecutionSample(AP)"
+      ],
+      "secondary": [
+        "jdk.GarbageCollection",
+        "jdk.GCPhasePause",
+        "jdk.SafepointLatency"
+      ]
+    }
+  }
+]

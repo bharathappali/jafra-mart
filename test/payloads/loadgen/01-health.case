@@ -1,0 +1,7 @@
+# loadgen health after customers logged in
+METHOD GET
+PATH /api/health
+EXPECT_STATUS 200
+EXPECT_JQ .status == "UP"
+EXPECT_JQ .customersLoggedIn == 200
+EXPECT_JQ .baseline == true

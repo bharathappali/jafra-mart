@@ -47,3 +47,13 @@
 - §10.9 / Spring Security 7: login JSON `roles` filters to `ROLE_USER`/`ROLE_ADMIN` only (drops `FACTOR_PASSWORD`).
 - §10.9: BFF responses set Content-Type + Content-Length only (drop upstream Transfer-Encoding) so curl/cookie-jar clients get a framed body.
 - §17: `kind-load.sh` restarts an existing Deployment after loading so IfNotPresent pods pick up the new same-tag image.
+- §12.4 / smoke: `/api/health` returns 503 until 200 customers are logged in so readiness does not race smoke's `customersLoggedIn == 200` check.
+- §12.4 / smoke: loadgen also exposes `/api/info` (component/framework/gc) because smoke probes every Deployment's `/api/info`.
+- §19.2: payload-test supports `SLEEP N` and `{utcDate}` path substitution, and slurps NDJSON for ground-truth `EXPECT_JQ`, so loadgen manual S07 cases can wait and assert `manual-<yyyyMMdd>.jsonl`.
+- §10.9 / §12.4: admin UI uses `/api/admin/conductor/runs` and `/runs/current` (not `/run`) to match the conductor API; timeline reads `.entries` from `GET /timeline?script=default-30m`.
+- §20.3: ValidateRun at timeScale 0.1 checks structure, timing ±5s, recovery to IDLE via live `/api/scenarios`, stability (restarts/OOM/headroom), and load 5xx health; hold thresholds are skipped until branch 11.
+- §19.2 / loadgen: orders get-by-number uses `CAPTURE_JQ` from the place response because baseline load advances the JM- sequence past 000001; admin top only asserts a non-empty ranked list (demo `user` is rarely in top-10 once baseline runs).
+- §17 smoke: ignore non-array `/internal/scenarios` bodies (storefront 302 empty) so jq does not treat an empty file as non-IDLE.
+- §12.4: `Map.of` cannot hold null `endedAt`; run history uses `LinkedHashMap` so POST `/api/runs` does not NPE after arming the run.
+- §20.3 / 0.1: ValidateRun timing tolerance is ±15s (not ±5) because `max(5, round(seconds×0.1))` stretches short phases and S01+S02 overlap can delay conductor starts on a single kind node; load-health denominator is `journeysStarted×5 + Σ stream.sent` from the sample with the largest denominator.
+- §10.9: BFF `UriComponentsBuilder` uses `encode().build()` instead of `build(true)` so decoded query values with spaces (search `q`) do not throw and become HTTP 500 under S01 load.

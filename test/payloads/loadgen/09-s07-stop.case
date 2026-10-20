@@ -1,0 +1,4 @@
+METHOD POST
+PATH /api/scenarios/S07/stop
+EXPECT_STATUS 202
+EXPECT_JQ .id == "S07"

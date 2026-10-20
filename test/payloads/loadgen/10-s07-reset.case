@@ -1,0 +1,4 @@
+METHOD POST
+PATH /api/scenarios/S07/reset
+EXPECT_STATUS 200
+EXPECT_JQ .state == "IDLE"
