@@ -13,5 +13,6 @@
     <module>services/catalog-search</module>
     <module>services/pricing</module>
     <module>services/inventory</module>
+    <module>services/cart</module>
   </modules>
 </project>

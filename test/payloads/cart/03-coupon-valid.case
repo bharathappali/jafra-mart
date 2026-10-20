@@ -1,0 +1,6 @@
+METHOD POST
+PATH /api/carts/user/coupon
+BODY {"code":"WELCOME10"}
+EXPECT_STATUS 200
+EXPECT_JQ .valid == true
+EXPECT_JQ .code == "WELCOME10"

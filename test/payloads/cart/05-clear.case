@@ -1,0 +1,3 @@
+METHOD DELETE
+PATH /api/carts/user
+EXPECT_STATUS 204

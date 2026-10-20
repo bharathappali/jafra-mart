@@ -12,3 +12,4 @@ resources:
   - 10-catalog-search.yaml
   - 11-pricing.yaml
   - 12-inventory.yaml
+  - 13-cart.yaml

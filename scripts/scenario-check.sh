@@ -91,7 +91,7 @@ else
     S10) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/products/SKU-{seq5}/thumbnail?size=256" --method GET --rps 20 --seconds 55 ;;
     S09) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/quote" --method POST --body '{"customerId":"customer007","couponCode":"WELCOME10","items":[{"sku":"SKU-00042","quantity":2}]}' --rps 10 --seconds 55 ;;
     S02) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/inventory/SKU-00042" --method GET --rps 200 --seconds 55 ;;
-    S07) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/carts/customer001/coupon" --method POST --body '{"code":"{rand8}"}' --rps 200 --seconds 55 ;;
+    S07) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/carts/customer001/coupon" --method POST --body '{"code":"{rand8}"}' --rps 200 --seconds 55 --concurrency 16 ;;
     S03) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/payments/authorize" --method POST --body '{"orderNumber":"JM-20261019-{seq}","customerId":"user","amountCents":23398,"currency":"USD","cardToken":"tok_visa"}' --rps 3 --seconds 55 ;;
     S12) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/payments/authorize" --method POST --body '{"orderNumber":"JM-20261019-{seq}","customerId":"user","amountCents":23398,"currency":"USD","cardToken":"tok_visa"}' --rps 5 --seconds 55 ;;
     S06) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/reports/exports/orders?rows=50000" --method GET --rps 2 --seconds 55 --concurrency 2 ;;

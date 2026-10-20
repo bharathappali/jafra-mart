@@ -19,3 +19,4 @@
 - §13.8/§13.9: pricing teardown `System.gc()` calls coalesce within 2 s so overlapping S08/S09 IDLE transitions share one GC.
 - §10.2: `FLASH20` discount is 20% of the SKU-00042 line subtotal (two units → 5200 cents off of 25998).
 - §13.9: each hidden `Pipe.run` includes 64 salt-specific arithmetic ops around the required `invokeinterface` so nmethods are large enough for `codeCacheUsedPct` to rise by ≥ 15 points on a 40 MiB cache during the short scenario check.
+- §19.3: S07 MiniLoad uses `--concurrency 16` so the cart 0.5 CPU limit still completes enough coupon checks for the exceptions threshold.

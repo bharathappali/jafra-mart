@@ -1,0 +1,6 @@
+METHOD GET
+PATH /api/info
+EXPECT_STATUS 200
+EXPECT_JQ .component == "cart"
+EXPECT_JQ .framework == "quarkus 3.40.1"
+EXPECT_JQ .gc == "Shenandoah"

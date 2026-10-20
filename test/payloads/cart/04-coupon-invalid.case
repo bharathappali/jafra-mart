@@ -1,0 +1,5 @@
+METHOD POST
+PATH /api/carts/user/coupon
+BODY {"code":"BADCODE1"}
+EXPECT_STATUS 200
+EXPECT_JQ .valid == false

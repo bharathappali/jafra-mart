@@ -1,0 +1,4 @@
+METHOD GET
+PATH /api/carts/user
+EXPECT_STATUS 200
+EXPECT_JQ .customerId == "user"
