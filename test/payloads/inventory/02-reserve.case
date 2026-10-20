@@ -1,0 +1,5 @@
+METHOD POST
+PATH /api/reservations
+BODY {"orderNumber":"JM-20261019-000123","items":[{"sku":"SKU-00042","quantity":2}]}
+EXPECT_STATUS 201
+EXPECT_JQ .status == "HELD"

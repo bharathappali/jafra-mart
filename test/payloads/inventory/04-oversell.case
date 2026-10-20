@@ -1,0 +1,5 @@
+METHOD POST
+PATH /api/reservations
+BODY {"orderNumber":"JM-OVER","items":[{"sku":"SKU-00001","quantity":100000}]}
+EXPECT_STATUS 409
+EXPECT_JQ .error == "CONFLICT"

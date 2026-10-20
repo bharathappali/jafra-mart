@@ -1,0 +1,5 @@
+METHOD GET
+PATH /api/inventory/SKU-00042
+EXPECT_STATUS 200
+EXPECT_JQ .sku == "SKU-00042"
+EXPECT_JQ .available == 1000000

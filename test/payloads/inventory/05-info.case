@@ -1,0 +1,6 @@
+METHOD GET
+PATH /api/info
+EXPECT_STATUS 200
+EXPECT_JQ .component == "inventory"
+EXPECT_JQ .framework == "spring-boot 4.1.1"
+EXPECT_JQ .gc == "Parallel"

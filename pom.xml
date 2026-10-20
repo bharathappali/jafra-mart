@@ -12,5 +12,6 @@
     <module>common/scenario-core</module>
     <module>services/catalog-search</module>
     <module>services/pricing</module>
+    <module>services/inventory</module>
   </modules>
 </project>
