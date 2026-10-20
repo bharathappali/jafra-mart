@@ -1,0 +1,7 @@
+# get first order after fresh postgres (seq 000001, UTC day of deploy)
+METHOD GET
+PATH /api/orders/JM-20261020-000001
+EXPECT_STATUS 200
+EXPECT_JQ .orderNumber == "JM-20261020-000001"
+EXPECT_JQ .status == "PLACED"
+EXPECT_JQ .totalCents == 23398

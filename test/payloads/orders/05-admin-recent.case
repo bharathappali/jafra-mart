@@ -1,0 +1,5 @@
+METHOD GET
+PATH /api/admin/orders/recent?limit=50
+EXPECT_STATUS 200
+EXPECT_JQ type == "array" and length >= 1
+EXPECT_JQ .[0].items | length >= 1

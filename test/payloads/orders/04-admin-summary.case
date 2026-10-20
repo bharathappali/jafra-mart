@@ -1,0 +1,7 @@
+METHOD GET
+PATH /api/admin/summary
+EXPECT_STATUS 200
+EXPECT_JQ .ordersTotal >= 1
+EXPECT_JQ .revenueCents >= 23398
+EXPECT_JQ (.ordersPerMinute | length) == 30
+EXPECT_JQ .activeCustomers >= 1

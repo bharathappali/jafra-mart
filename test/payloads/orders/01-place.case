@@ -1,0 +1,13 @@
+# place order WELCOME10 two SKU-00042
+METHOD POST
+PATH /api/orders
+BODY {"customerId":"user","customerName":"Demo User","couponCode":"WELCOME10","cardToken":"tok_visa","items":[{"sku":"SKU-00042","quantity":2}]}
+EXPECT_STATUS 201
+EXPECT_JQ .status == "PLACED"
+EXPECT_JQ .subtotalCents == 25998
+EXPECT_JQ .discountCents == 2600
+EXPECT_JQ .totalCents == 23398
+EXPECT_JQ .items[0].sku == "SKU-00042"
+EXPECT_JQ .items[0].productName == "Frosted Glass Smart Lamp"
+EXPECT_JQ .items[0].unitPriceCents == 12999
+EXPECT_JQ .orderNumber | test("^JM-[0-9]{8}-[0-9]{6}$")

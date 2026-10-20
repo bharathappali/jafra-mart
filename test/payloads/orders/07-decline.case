@@ -1,0 +1,5 @@
+METHOD POST
+PATH /api/orders
+BODY {"customerId":"user","customerName":"Demo User","couponCode":"WELCOME10","cardToken":"tok_decline","items":[{"sku":"SKU-00042","quantity":2}]}
+EXPECT_STATUS 402
+EXPECT_JQ .error == "PAYMENT_DECLINED"

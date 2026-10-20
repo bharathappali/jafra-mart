@@ -32,3 +32,11 @@
 - §10.7: `SimilarityEntry` bytes are counted as `16384 * Float.BYTES` per entry (embedding payload only).
 - §10.7: embedding floats are filled with `SplittableRandom(Integer.toUnsignedLong(key.hashCode()))`.
 - §10.7: missing `productId` is a required query param (Spring 400); unknown SKU → 404 `NOT_FOUND`.
+- §10.6: admin/revenue metrics count only `PLACED` orders (FAILED / PAYMENT_DECLINED excluded).
+- §10.6: `402`/`504` error bodies include both `error` and `message` to match the shared ApiError shape.
+- §10.6 / §19.2: get-by-number payload uses `JM-<UTC today>-000001` (first sequence on a fresh postgres emptyDir after deploy).
+- §13.4: burst-pool threads are daemon so unit tests exit cleanly; production leak behaviour is unchanged until trim/reset.
+- §10.6: unit tests use `InMemoryOrderStore`; kind payload cases are the Postgres integration coverage (no Testcontainers).
+- §10.6: JDBC insert requests generated key column `id` only; Postgres `RETURN_GENERATED_KEYS` otherwise returns the whole row and `KeyHolder.getKey()` fails.
+- §13.4: burst detection also runs on intensity ticks and skips the 5 s cooldown when zero pools were created, so a MiniLoad burst that lands at ci=0 still leaks after the next tick.
+- §13.4: `threadCount` metric is `ThreadMXBean.getThreadCount()` (JVM-wide), matching the ≈60→≈380 symptom; leaked-pool threads alone stay below the short-check threshold of 90.

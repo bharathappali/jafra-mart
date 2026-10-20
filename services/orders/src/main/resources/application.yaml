@@ -1,0 +1,35 @@
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 100
+spring:
+  application:
+    name: orders
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/jaframart}
+    username: ${SPRING_DATASOURCE_USERNAME:jaframart}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 3000
+      initialization-fail-timeout: -1
+  sql:
+    init:
+      mode: always
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    db:
+      enabled: false
+logging:
+  level:
+    root: WARN
+    com.jaframart.scenario: INFO

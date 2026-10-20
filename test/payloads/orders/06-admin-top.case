@@ -1,0 +1,7 @@
+METHOD GET
+PATH /api/admin/customers/top?limit=10
+EXPECT_STATUS 200
+EXPECT_JQ type == "array" and length >= 1
+EXPECT_JQ .[0].customerId == "user"
+EXPECT_JQ .[0].orders >= 1
+EXPECT_JQ .[0].totalCents >= 23398

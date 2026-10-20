@@ -16,3 +16,4 @@ resources:
   - 14-payments.yaml
   - 15-reports-worker.yaml
   - 16-recommendations.yaml
+  - 17-orders.yaml
