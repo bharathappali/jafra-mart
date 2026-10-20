@@ -21,7 +21,7 @@ public class PipelineEngine {
   private static final PriceRule RULE_B = VolumeRule.INSTANCE;
   private static final PriceRule RULE_C = RoundingRule.INSTANCE;
   private static final int MAX_PIPES = 50_000;
-  private static final int WARMUP = 30_000;
+  private static final int WARMUP = 22_000;
 
   private final TeardownGc teardownGc;
   private final Deque<Pipe> pipes = new ArrayDeque<>();
@@ -70,7 +70,7 @@ public class PipelineEngine {
     }
     intensity = 0;
     frozen = false;
-    teardownGc.gcOnce();
+    teardownGc.gcNow();
     teardownGcFlag = teardownGc.lastRan();
   }
 
@@ -113,12 +113,18 @@ public class PipelineEngine {
         double ci = intensity;
         if (ci > 0 && !frozen) {
           int count = (int) Math.round(20 * ci);
+          long started = System.nanoTime();
           for (int i = 0; i < count; i++) {
             createAndWarm(ctx);
           }
           trimToTarget(ci);
+          long elapsedMs = (System.nanoTime() - started) / 1_000_000L;
+          if (elapsedMs < 1000L) {
+            Thread.sleep(1000L - elapsedMs);
+          }
+        } else {
+          Thread.sleep(1000L);
         }
-        Thread.sleep(1000L);
       } catch (InterruptedException ex) {
         Thread.currentThread().interrupt();
         return;
@@ -151,15 +157,23 @@ public class PipelineEngine {
 
   private void trimToTarget(double ci) {
     double occupancy = codeCacheUsedPct() / 100.0;
-    double threshold = 0.90 * ci;
+    // Allocation fails around 83%, under the old 0.90 line, and pipesCreated froze.
+    // Trim at 82% and collect, but only on a due GC (every 2s) so several ticks
+    // cannot drain the cache between collections. One drop is ~4 points.
+    double threshold = Math.min(0.82, 0.90 * ci);
+    if (occupancy < threshold || !teardownGc.due()) {
+      return;
+    }
     synchronized (pipes) {
-      if (occupancy >= threshold) {
-        int drop = Math.max(1, pipes.size() / 20);
-        for (int i = 0; i < drop && !pipes.isEmpty(); i++) {
-          pipes.removeFirst();
-        }
+      if (pipes.isEmpty()) {
+        return;
+      }
+      int drop = Math.max(1, pipes.size() / 15);
+      for (int i = 0; i < drop && !pipes.isEmpty(); i++) {
+        pipes.removeFirst();
       }
     }
+    teardownGc.gcOnce();
   }
 
   private void touchPipes() {

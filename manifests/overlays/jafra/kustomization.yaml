@@ -1,0 +1,229 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: jafra-mart
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: jafra-mart
+    includeSelectors: false
+resources:
+  - ../../00-namespace.yaml
+  - ../../01-config.yaml
+  - ../../05-postgres.yaml
+  - ../../10-catalog-search.yaml
+  - ../../11-pricing.yaml
+  - ../../12-inventory.yaml
+  - ../../13-cart.yaml
+  - ../../14-payments.yaml
+  - ../../15-reports-worker.yaml
+  - ../../16-recommendations.yaml
+  - ../../17-orders.yaml
+  - ../../18-storefront.yaml
+  - ../../19-loadgen.yaml
+patches:
+  - target:
+      kind: Deployment
+      name: catalog-search
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: catalog-search
+        labels:
+          jafra.io/enabled: "true"
+          jafra.io/mode: "continuous"
+        annotations:
+          jafra.io/containers: "catalog-search"
+          jafra.io/chunktime: "5s"
+      spec:
+        template:
+          metadata:
+            labels:
+              jafra.io/enabled: "true"
+              jafra.io/mode: "continuous"
+            annotations:
+              jafra.io/containers: "catalog-search"
+              jafra.io/chunktime: "5s"
+  - target:
+      kind: Deployment
+      name: pricing
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: pricing
+        labels:
+          jafra.io/enabled: "true"
+          jafra.io/mode: "continuous"
+        annotations:
+          jafra.io/containers: "pricing"
+          jafra.io/chunktime: "5s"
+      spec:
+        template:
+          metadata:
+            labels:
+              jafra.io/enabled: "true"
+              jafra.io/mode: "continuous"
+            annotations:
+              jafra.io/containers: "pricing"
+              jafra.io/chunktime: "5s"
+  - target:
+      kind: Deployment
+      name: inventory
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: inventory
+        labels:
+          jafra.io/enabled: "true"
+          jafra.io/mode: "continuous"
+        annotations:
+          jafra.io/containers: "inventory"
+          jafra.io/chunktime: "5s"
+      spec:
+        template:
+          metadata:
+            labels:
+              jafra.io/enabled: "true"
+              jafra.io/mode: "continuous"
+            annotations:
+              jafra.io/containers: "inventory"
+              jafra.io/chunktime: "5s"
+  - target:
+      kind: Deployment
+      name: cart
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cart
+        labels:
+          jafra.io/enabled: "true"
+          jafra.io/mode: "continuous"
+        annotations:
+          jafra.io/containers: "cart"
+          jafra.io/chunktime: "5s"
+      spec:
+        template:
+          metadata:
+            labels:
+              jafra.io/enabled: "true"
+              jafra.io/mode: "continuous"
+            annotations:
+              jafra.io/containers: "cart"
+              jafra.io/chunktime: "5s"
+  - target:
+      kind: Deployment
+      name: payments
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: payments
+        labels:
+          jafra.io/enabled: "true"
+          jafra.io/mode: "continuous"
+        annotations:
+          jafra.io/containers: "payments"
+          jafra.io/chunktime: "5s"
+      spec:
+        template:
+          metadata:
+            labels:
+              jafra.io/enabled: "true"
+              jafra.io/mode: "continuous"
+            annotations:
+              jafra.io/containers: "payments"
+              jafra.io/chunktime: "5s"
+  - target:
+      kind: Deployment
+      name: reports-worker
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: reports-worker
+        labels:
+          jafra.io/enabled: "true"
+          jafra.io/mode: "continuous"
+        annotations:
+          jafra.io/containers: "reports-worker"
+          jafra.io/chunktime: "5s"
+      spec:
+        template:
+          metadata:
+            labels:
+              jafra.io/enabled: "true"
+              jafra.io/mode: "continuous"
+            annotations:
+              jafra.io/containers: "reports-worker"
+              jafra.io/chunktime: "5s"
+  - target:
+      kind: Deployment
+      name: recommendations
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: recommendations
+        labels:
+          jafra.io/enabled: "true"
+          jafra.io/mode: "continuous"
+        annotations:
+          jafra.io/containers: "recommendations"
+          jafra.io/chunktime: "5s"
+      spec:
+        template:
+          metadata:
+            labels:
+              jafra.io/enabled: "true"
+              jafra.io/mode: "continuous"
+            annotations:
+              jafra.io/containers: "recommendations"
+              jafra.io/chunktime: "5s"
+  - target:
+      kind: Deployment
+      name: orders
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: orders
+        labels:
+          jafra.io/enabled: "true"
+          jafra.io/mode: "continuous"
+        annotations:
+          jafra.io/containers: "orders"
+          jafra.io/chunktime: "5s"
+      spec:
+        template:
+          metadata:
+            labels:
+              jafra.io/enabled: "true"
+              jafra.io/mode: "continuous"
+            annotations:
+              jafra.io/containers: "orders"
+              jafra.io/chunktime: "5s"
+  - target:
+      kind: Deployment
+      name: storefront
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: storefront
+        labels:
+          jafra.io/enabled: "true"
+          jafra.io/mode: "continuous"
+        annotations:
+          jafra.io/containers: "storefront"
+          jafra.io/chunktime: "5s"
+      spec:
+        template:
+          metadata:
+            labels:
+              jafra.io/enabled: "true"
+              jafra.io/mode: "continuous"
+            annotations:
+              jafra.io/containers: "storefront"
+              jafra.io/chunktime: "5s"

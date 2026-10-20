@@ -26,7 +26,33 @@ require_cmd podman
 require_cmd kind
 require_cmd kubectl
 
+# podman --pids-limit defaults to 2048. systemd inside the node then sets
+# DefaultTasksMax to 15% of that (307) on every container scope. S04 needs
+# ~400 tasks (40 pools × 8 threads plus the JVM). 307 returns EAGAIN and the
+# kubelet restarts orders before threadCount can reach 300.
+ensure_container_pids() {
+  local node="${CLUSTER}-control-plane"
+  if ! podman container exists "$node" >/dev/null 2>&1; then
+    return 0
+  fi
+  local limit
+  limit="$(podman inspect --format '{{.HostConfig.PidsLimit}}' "$node")"
+  if [[ "${limit:-0}" -lt 65536 ]]; then
+    log "raising $node pids limit from ${limit} to 65536"
+    podman update --pids-limit 65536 "$node" >/dev/null
+  fi
+  podman exec "$node" sh -c '
+    conf=/etc/systemd/system.conf.d/10-jaframart-tasks.conf
+    if [ ! -f "$conf" ] || ! grep -qx "DefaultTasksMax=8192" "$conf"; then
+      mkdir -p /etc/systemd/system.conf.d
+      printf "[Manager]\nDefaultTasksMax=8192\n" > "$conf"
+      systemctl daemon-reexec
+    fi
+  '
+}
+
 if kind get clusters | grep -qx "$CLUSTER"; then
+  ensure_container_pids
   log "cluster $CLUSTER already exists"
   exit 0
 fi
@@ -44,6 +70,7 @@ create_cluster() {
 }
 
 create_cluster
+ensure_container_pids
 kubectl wait --for=condition=Ready node --all --timeout=180s
 cpu="$(kubectl get nodes -o jsonpath='{.items[0].status.allocatable.cpu}')"
 mem="$(kubectl get nodes -o jsonpath='{.items[0].status.allocatable.memory}')"

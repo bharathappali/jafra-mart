@@ -4,6 +4,8 @@ import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
 
 import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -30,6 +32,7 @@ public class FulfillmentNotifier {
   private volatile boolean growthFrozen;
   private long lastBurstDetectMs;
   private int poolSeq;
+  private int reservedPools;
 
   public FulfillmentNotifier() {
     AtomicInteger n = new AtomicInteger();
@@ -48,49 +51,99 @@ public class FulfillmentNotifier {
   public void onOrderPlaced(Object order) {
     baseline.execute(FulfillmentNotifier::notifyWarehouse);
     long now = System.currentTimeMillis();
+    BurstPlan plan;
     synchronized (lock) {
       recentOrders.addLast(now);
-      while (!recentOrders.isEmpty() && now - recentOrders.peekFirst() > BURST_WINDOW_MS) {
-        recentOrders.removeFirst();
-      }
-      tryDetectBurstLocked(now);
+      pruneOrders(now);
+      plan = planBurstLocked(now);
     }
+    attach(plan);
   }
 
   /**
    * Leak site for S04 JFR stacks. Creates up to 2 pools per detection, capped by target.
+   * Threads are started outside the notifier lock so a slow {@code pthread_create} cannot
+   * stall the scenario clock.
    * @return number of pools created
    */
   int onBurst() {
-    int target = targetPools();
-    int created = 0;
-    for (int i = 0; i < 2; i++) {
-      if (leakedPools.size() >= target || leakedPools.size() >= MAX_POOLS) {
-        break;
-      }
-      leakedPools.add(newBurstPool(++poolSeq));
-      created++;
+    BurstPlan plan;
+    synchronized (lock) {
+      plan = planBurstLocked(System.currentTimeMillis());
     }
-    return created;
+    return attach(plan);
   }
 
-  private void tryDetectBurstLocked(long now) {
+  private void pruneOrders(long now) {
     while (!recentOrders.isEmpty() && now - recentOrders.peekFirst() > BURST_WINDOW_MS) {
       recentOrders.removeFirst();
     }
+  }
+
+  private BurstPlan planBurstLocked(long now) {
+    pruneOrders(now);
     if (intensity <= 0 || growthFrozen) {
-      return;
+      return BurstPlan.NONE;
     }
     if (recentOrders.size() < BURST_ORDERS) {
-      return;
+      return BurstPlan.NONE;
     }
     if (now - lastBurstDetectMs < BURST_DETECT_COOLDOWN_MS) {
-      return;
+      return BurstPlan.NONE;
     }
-    int created = onBurst();
-    // Do not burn the cooldown when target is still 0 (early ramp); tick will retry.
-    if (created > 0) {
-      lastBurstDetectMs = now;
+    int target = targetPools();
+    int room = Math.min(2, Math.min(target, MAX_POOLS) - leakedPools.size() - reservedPools);
+    if (room <= 0) {
+      return BurstPlan.NONE;
+    }
+    int firstId = poolSeq + 1;
+    poolSeq += room;
+    reservedPools += room;
+    lastBurstDetectMs = now;
+    return new BurstPlan(room, firstId);
+  }
+
+  private int attach(BurstPlan plan) {
+    if (plan.room <= 0) {
+      return 0;
+    }
+    List<ThreadPoolExecutor> created = new ArrayList<>();
+    try {
+      for (int i = 0; i < plan.room; i++) {
+        if (!pidsAllow(8)) {
+          growthFrozen = true;
+          break;
+        }
+        try {
+          created.add(newBurstPool(plan.firstId + i));
+        } catch (OutOfMemoryError ex) {
+          growthFrozen = true;
+          break;
+        }
+      }
+    } finally {
+      synchronized (lock) {
+        leakedPools.addAll(created);
+        reservedPools -= plan.room;
+        if (reservedPools < 0) {
+          reservedPools = 0;
+        }
+      }
+    }
+    return created.size();
+  }
+
+  private static boolean pidsAllow(int extra) {
+    try {
+      String maxText = Files.readString(Path.of("/sys/fs/cgroup/pids.max")).trim();
+      if ("max".equals(maxText)) {
+        return true;
+      }
+      long max = Long.parseLong(maxText);
+      long current = Long.parseLong(Files.readString(Path.of("/sys/fs/cgroup/pids.current")).trim());
+      return current + extra + 24 < max;
+    } catch (Exception ex) {
+      return true;
     }
   }
 
@@ -120,12 +173,14 @@ public class FulfillmentNotifier {
   }
 
   public void setScenarioIntensity(double ci) {
+    BurstPlan plan;
     synchronized (lock) {
       this.intensity = ci;
       trimToTarget();
       // Re-check after intensity rises so a burst that arrived at ci=0 still leaks pools.
-      tryDetectBurstLocked(System.currentTimeMillis());
+      plan = planBurstLocked(System.currentTimeMillis());
     }
+    attach(plan);
   }
 
   public void setGrowthFrozen(boolean frozen) {
@@ -149,6 +204,7 @@ public class FulfillmentNotifier {
       intensity = 0;
       growthFrozen = false;
       lastBurstDetectMs = 0;
+      reservedPools = 0;
       recentOrders.clear();
       for (ThreadPoolExecutor pool : leakedPools) {
         pool.shutdown();
@@ -167,6 +223,10 @@ public class FulfillmentNotifier {
   /** JVM live thread count (baseline ≈ 60 + leaked burst-pool threads). */
   public int threadCount() {
     return ManagementFactory.getThreadMXBean().getThreadCount();
+  }
+
+  private record BurstPlan(int room, int firstId) {
+    static final BurstPlan NONE = new BurstPlan(0, 0);
   }
 
   @PreDestroy

@@ -22,6 +22,10 @@ scripts/smoke-test.sh
 
 Open http://localhost:30080 . The conductor API is http://localhost:30081 .
 
+Sign in as `admin` / `admin`, open Scenarios, and run the 30-minute script. The same run from the shell is `scripts/e2e-30min.sh`.
+
+To use the public quay images instead of images built on this machine, skip `scripts/kind-load.sh`. `scripts/deploy.sh` sets `imagePullPolicy: IfNotPresent`, so the node pulls `quay.io/bharathappali/jafra-mart:v1-<component>`.
+
 Public demo logins (not secrets):
 
 | Username | Password | Role |

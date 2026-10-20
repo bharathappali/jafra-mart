@@ -18,6 +18,17 @@ public class ClientsConfig {
     return restClient(baseUrl);
   }
 
+  /**
+   * Search-only client. S01 fuzzy queries outlive a 10 s read, and 60 of them pin every
+   * Tomcat thread (max 100), so probes and the S02 inventory calls never get a worker.
+   * 500 ms returns 504 for the slow ones and leaves the pool free. Other catalog calls
+   * keep the 10 s client.
+   */
+  @Bean
+  RestClient catalogSearchRestClient(@Value("${CATALOG_URL:http://catalog-search:8080}") String baseUrl) {
+    return restClient(baseUrl, 1_000, 500);
+  }
+
   @Bean
   RestClient inventoryRestClient(@Value("${INVENTORY_URL:http://inventory:8080}") String baseUrl) {
     return restClient(baseUrl);

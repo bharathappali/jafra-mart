@@ -9,14 +9,26 @@ public class TeardownGc {
   private long lastGcNanos;
   private boolean lastRan;
 
-  public synchronized void gcOnce() {
+  public synchronized boolean due() {
+    long now = System.nanoTime();
+    return lastGcNanos == 0 || now - lastGcNanos >= COALESCE_NS;
+  }
+
+  public synchronized boolean gcOnce() {
     long now = System.nanoTime();
     if (lastGcNanos > 0 && now - lastGcNanos < COALESCE_NS) {
       lastRan = true;
-      return;
+      return false;
     }
     System.gc();
     lastGcNanos = now;
+    lastRan = true;
+    return true;
+  }
+
+  public synchronized void gcNow() {
+    System.gc();
+    lastGcNanos = System.nanoTime();
     lastRan = true;
   }
 

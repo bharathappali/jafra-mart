@@ -42,6 +42,12 @@ final class Conductor {
   private final ScheduledExecutorService clock = Executors.newSingleThreadScheduledExecutor(r -> {
     Thread t = new Thread(r, "conductor-clock");
     t.setDaemon(true);
+    t.setPriority(Thread.MAX_PRIORITY);
+    return t;
+  });
+  private final ScheduledExecutorService polls = Executors.newSingleThreadScheduledExecutor(r -> {
+    Thread t = new Thread(r, "conductor-poll");
+    t.setDaemon(true);
     return t;
   });
 
@@ -61,7 +67,7 @@ final class Conductor {
     for (ScenarioCatalog.Entry entry : catalog.all()) {
       tracked.put(entry.id(), new TrackedScenario(entry));
     }
-    clock.scheduleAtFixedRate(this::pollStatuses, 200, 200, TimeUnit.MILLISECONDS);
+    polls.scheduleAtFixedRate(this::pollStatuses, 200, 200, TimeUnit.MILLISECONDS);
     clock.scheduleAtFixedRate(this::advanceRun, 200, 200, TimeUnit.MILLISECONDS);
   }
 
@@ -673,39 +679,48 @@ final class Conductor {
     }
 
     void scheduleForRun(String runId, ScriptDef.Entry entry, double timeScale) {
-      this.runId = runId;
-      this.source = "script";
-      this.plannedStartAt = entry.startAt();
-      this.plannedRamp = entry.ramp();
-      this.plannedHold = entry.hold();
-      this.plannedRecover = entry.recover();
-      this.runStarted = false;
-      this.lastPhase = "IDLE";
-      this.lastGuard = false;
+      synchronized (this) {
+        this.runId = runId;
+        this.source = "script";
+        this.plannedStartAt = entry.startAt();
+        this.plannedRamp = entry.ramp();
+        this.plannedHold = entry.hold();
+        this.plannedRecover = entry.recover();
+        this.runStarted = false;
+        this.lastPhase = "IDLE";
+        this.lastGuard = false;
+      }
     }
 
     void bind(String runId, String source, int plannedStartAt, StartRequest req) {
-      this.runId = runId;
-      this.source = source;
-      if (!"script".equals(source)) {
-        this.plannedStartAt = plannedStartAt;
-        this.plannedRamp = req.rampSeconds() == null ? 0 : req.rampSeconds();
-        this.plannedHold = req.holdSeconds() == null ? 0 : req.holdSeconds();
-        this.plannedRecover = req.recoverSeconds() == null ? 0 : req.recoverSeconds();
+      synchronized (this) {
+        this.runId = runId;
+        this.source = source;
+        if (!"script".equals(source)) {
+          this.plannedStartAt = plannedStartAt;
+          this.plannedRamp = req.rampSeconds() == null ? 0 : req.rampSeconds();
+          this.plannedHold = req.holdSeconds() == null ? 0 : req.holdSeconds();
+          this.plannedRecover = req.recoverSeconds() == null ? 0 : req.recoverSeconds();
+        }
+        this.lastPhase = null;
+        this.lastGuard = false;
       }
-      this.lastPhase = null;
-      this.lastGuard = false;
     }
 
     void recordInitialPhase(JsonNode status, Conductor conductor) {
-      if (status == null || status.isNull()) {
-        return;
-      }
-      lastStatus = statusToMap(status);
-      String phase = status.path("state").asText("IDLE");
-      lastPhase = phase;
-      if (!"IDLE".equals(phase)) {
-        conductor.onPhase(this, phase, status);
+      synchronized (this) {
+        if (status == null || status.isNull()) {
+          return;
+        }
+        lastStatus = statusToMap(status);
+        String phase = status.path("state").asText("IDLE");
+        if (java.util.Objects.equals(phase, lastPhase)) {
+          return;
+        }
+        lastPhase = phase;
+        if (!"IDLE".equals(phase)) {
+          conductor.onPhase(this, phase, status);
+        }
       }
     }
 
@@ -716,21 +731,23 @@ final class Conductor {
     }
 
     void onStatus(JsonNode status, Conductor conductor) {
-      lastStatus = statusToMap(status);
-      String phase = status.path("state").asText("IDLE");
-      if (!Objects.equals(phase, lastPhase)) {
-        String previous = lastPhase;
-        lastPhase = phase;
-        if (previous != null || !"IDLE".equals(phase)) {
-          conductor.onPhase(this, phase, status);
+      synchronized (this) {
+        lastStatus = statusToMap(status);
+        String phase = status.path("state").asText("IDLE");
+        if (!Objects.equals(phase, lastPhase)) {
+          String previous = lastPhase;
+          lastPhase = phase;
+          if (previous != null || !"IDLE".equals(phase)) {
+            conductor.onPhase(this, phase, status);
+          }
         }
-      }
-      boolean tripped = status.path("guard").path("tripped").asBoolean(false);
-      if (lastGuard == null || lastGuard != tripped) {
-        if (lastGuard != null) {
-          conductor.onGuard(this, status, tripped);
+        boolean tripped = status.path("guard").path("tripped").asBoolean(false);
+        if (lastGuard == null || lastGuard != tripped) {
+          if (lastGuard != null) {
+            conductor.onGuard(this, status, tripped);
+          }
+          lastGuard = tripped;
         }
-        lastGuard = tripped;
       }
     }
   }

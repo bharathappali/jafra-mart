@@ -48,15 +48,17 @@ spec:
                   fieldPath: metadata.namespace
             - name: THUMB_DIR
               value: /data/thumbs
+            - name: MALLOC_ARENA_MAX
+              value: "2"
             - name: JAVA_OPTS
               value: "-Xms160m -Xmx160m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=48m -XX:MaxDirectMemorySize=32m -XX:NativeMemoryTracking=summary -XX:+EnableDynamicAgentLoading -XX:+ExitOnOutOfMemoryError -Xlog:gc:stdout:uptime,level,tags -Duser.timezone=UTC -Dfile.encoding=UTF-8 -XX:+UseG1GC"
           resources:
             requests:
               cpu: "0.25"
-              memory: 512Mi
+              memory: 576Mi
             limits:
               cpu: "0.50"
-              memory: 704Mi
+              memory: 768Mi
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true

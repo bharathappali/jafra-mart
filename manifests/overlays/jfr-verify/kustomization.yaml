@@ -1,0 +1,166 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: jafra-mart
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: jafra-mart
+    includeSelectors: false
+resources:
+  - ../../00-namespace.yaml
+  - ../../01-config.yaml
+  - ../../05-postgres.yaml
+  - ../../10-catalog-search.yaml
+  - ../../11-pricing.yaml
+  - ../../12-inventory.yaml
+  - ../../13-cart.yaml
+  - ../../14-payments.yaml
+  - ../../15-reports-worker.yaml
+  - ../../16-recommendations.yaml
+  - ../../17-orders.yaml
+  - ../../18-storefront.yaml
+  - ../../19-loadgen.yaml
+patches:
+  - target:
+      kind: Deployment
+      name: catalog-search
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: catalog-search
+      spec:
+        template:
+          spec:
+            containers:
+              - name: catalog-search
+                env:
+                  - name: EXTRA_JAVA_OPTS
+                    value: "-XX:StartFlightRecording=name=verify,settings=profile,filename=/tmp/verify-%t.jfr,dumponexit=true,maxsize=150m,+jdk.SafepointStateSynchronization#enabled=true,+jdk.SafepointLatency#enabled=true,+jdk.ClassLoad#enabled=true,+jdk.ClassLoad#threshold=0ms,+jdk.ClassUnload#enabled=true,+jdk.JavaExceptionThrow#enabled=true,+jdk.FileForce#threshold=0ms,+jdk.VirtualThreadPinned#threshold=20ms"
+  - target:
+      kind: Deployment
+      name: pricing
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: pricing
+      spec:
+        template:
+          spec:
+            containers:
+              - name: pricing
+                env:
+                  - name: EXTRA_JAVA_OPTS
+                    value: "-XX:StartFlightRecording=name=verify,settings=profile,filename=/tmp/verify-%t.jfr,dumponexit=true,maxsize=150m,+jdk.SafepointStateSynchronization#enabled=true,+jdk.SafepointLatency#enabled=true,+jdk.ClassLoad#enabled=true,+jdk.ClassLoad#threshold=0ms,+jdk.ClassUnload#enabled=true,+jdk.JavaExceptionThrow#enabled=true,+jdk.FileForce#threshold=0ms,+jdk.VirtualThreadPinned#threshold=20ms"
+  - target:
+      kind: Deployment
+      name: inventory
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: inventory
+      spec:
+        template:
+          spec:
+            containers:
+              - name: inventory
+                env:
+                  - name: EXTRA_JAVA_OPTS
+                    value: "-XX:StartFlightRecording=name=verify,settings=profile,filename=/tmp/verify-%t.jfr,dumponexit=true,maxsize=150m,+jdk.SafepointStateSynchronization#enabled=true,+jdk.SafepointLatency#enabled=true,+jdk.ClassLoad#enabled=true,+jdk.ClassLoad#threshold=0ms,+jdk.ClassUnload#enabled=true,+jdk.JavaExceptionThrow#enabled=true,+jdk.FileForce#threshold=0ms,+jdk.VirtualThreadPinned#threshold=20ms"
+  - target:
+      kind: Deployment
+      name: cart
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cart
+      spec:
+        template:
+          spec:
+            containers:
+              - name: cart
+                env:
+                  - name: EXTRA_JAVA_OPTS
+                    value: "-XX:StartFlightRecording=name=verify,settings=profile,filename=/tmp/verify-%t.jfr,dumponexit=true,maxsize=150m,+jdk.SafepointStateSynchronization#enabled=true,+jdk.SafepointLatency#enabled=true,+jdk.ClassLoad#enabled=true,+jdk.ClassLoad#threshold=0ms,+jdk.ClassUnload#enabled=true,+jdk.JavaExceptionThrow#enabled=true,+jdk.FileForce#threshold=0ms,+jdk.VirtualThreadPinned#threshold=20ms"
+  - target:
+      kind: Deployment
+      name: payments
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: payments
+      spec:
+        template:
+          spec:
+            containers:
+              - name: payments
+                env:
+                  - name: EXTRA_JAVA_OPTS
+                    value: "-XX:StartFlightRecording=name=verify,settings=profile,filename=/tmp/verify-%t.jfr,dumponexit=true,maxsize=150m,+jdk.SafepointStateSynchronization#enabled=true,+jdk.SafepointLatency#enabled=true,+jdk.ClassLoad#enabled=true,+jdk.ClassLoad#threshold=0ms,+jdk.ClassUnload#enabled=true,+jdk.JavaExceptionThrow#enabled=true,+jdk.FileForce#threshold=0ms,+jdk.VirtualThreadPinned#threshold=20ms"
+  - target:
+      kind: Deployment
+      name: reports-worker
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: reports-worker
+      spec:
+        template:
+          spec:
+            containers:
+              - name: reports-worker
+                env:
+                  - name: EXTRA_JAVA_OPTS
+                    value: "-XX:StartFlightRecording=name=verify,settings=profile,filename=/tmp/verify-%t.jfr,dumponexit=true,maxsize=150m,+jdk.SafepointStateSynchronization#enabled=true,+jdk.SafepointLatency#enabled=true,+jdk.ClassLoad#enabled=true,+jdk.ClassLoad#threshold=0ms,+jdk.ClassUnload#enabled=true,+jdk.JavaExceptionThrow#enabled=true,+jdk.FileForce#threshold=0ms,+jdk.VirtualThreadPinned#threshold=20ms"
+  - target:
+      kind: Deployment
+      name: recommendations
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: recommendations
+      spec:
+        template:
+          spec:
+            containers:
+              - name: recommendations
+                env:
+                  - name: EXTRA_JAVA_OPTS
+                    value: "-XX:StartFlightRecording=name=verify,settings=profile,filename=/tmp/verify-%t.jfr,dumponexit=true,maxsize=150m,+jdk.SafepointStateSynchronization#enabled=true,+jdk.SafepointLatency#enabled=true,+jdk.ClassLoad#enabled=true,+jdk.ClassLoad#threshold=0ms,+jdk.ClassUnload#enabled=true,+jdk.JavaExceptionThrow#enabled=true,+jdk.FileForce#threshold=0ms,+jdk.VirtualThreadPinned#threshold=20ms"
+  - target:
+      kind: Deployment
+      name: orders
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: orders
+      spec:
+        template:
+          spec:
+            containers:
+              - name: orders
+                env:
+                  - name: EXTRA_JAVA_OPTS
+                    value: "-XX:StartFlightRecording=name=verify,settings=profile,filename=/tmp/verify-%t.jfr,dumponexit=true,maxsize=150m,+jdk.SafepointStateSynchronization#enabled=true,+jdk.SafepointLatency#enabled=true,+jdk.ClassLoad#enabled=true,+jdk.ClassLoad#threshold=0ms,+jdk.ClassUnload#enabled=true,+jdk.JavaExceptionThrow#enabled=true,+jdk.FileForce#threshold=0ms,+jdk.VirtualThreadPinned#threshold=20ms"
+  - target:
+      kind: Deployment
+      name: storefront
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: storefront
+      spec:
+        template:
+          spec:
+            containers:
+              - name: storefront
+                env:
+                  - name: EXTRA_JAVA_OPTS
+                    value: "-XX:StartFlightRecording=name=verify,settings=profile,filename=/tmp/verify-%t.jfr,dumponexit=true,maxsize=150m,+jdk.SafepointStateSynchronization#enabled=true,+jdk.SafepointLatency#enabled=true,+jdk.ClassLoad#enabled=true,+jdk.ClassLoad#threshold=0ms,+jdk.ClassUnload#enabled=true,+jdk.JavaExceptionThrow#enabled=true,+jdk.FileForce#threshold=0ms,+jdk.VirtualThreadPinned#threshold=20ms"

@@ -67,14 +67,7 @@ public final class HiddenClassFactory {
       });
       clb.withMethodBody("run", RUN, ClassFile.ACC_PUBLIC, cob -> {
         cob.lload(2);
-        for (int i = 0; i < 64; i++) {
-          cob.ldc((long) (salt * 131 + i * 17 + 1));
-          cob.lxor();
-          cob.ldc((long) (i + 3));
-          cob.ladd();
-          cob.ldc((long) ((salt ^ i) + 9));
-          cob.lmul();
-        }
+        cob.invokestatic(thisClass, "mix", HELPER);
         cob.lstore(4);
         cob.aload(1);
         cob.lload(4);
@@ -82,9 +75,45 @@ public final class HiddenClassFactory {
         cob.invokeinterface(PRICE_RULE, "apply", APPLY);
         cob.lreturn();
       });
+      emitMix(clb, salt);
     });
     MethodHandles.Lookup lookup = MethodHandles.lookup().defineHiddenClass(bytes, true);
     return (Pipe) lookup.lookupClass().getDeclaredConstructor().newInstance();
+  }
+
+  /**
+   * Fat, monomorphic helper. It stays compiled after {@code run} deoptimizes on the
+   * class-check uncommon trap, so the 40 MiB code cache actually fills.
+   */
+  private static void emitMix(java.lang.classfile.ClassBuilder clb, int salt) {
+    clb.withMethodBody("mix", HELPER, ClassFile.ACC_PRIVATE | ClassFile.ACC_STATIC, cob -> {
+      cob.lload(0);
+      cob.l2i();
+      cob.iconst_3();
+      cob.iand();
+      cob.istore(2);
+      java.lang.classfile.Label done = cob.newLabel();
+      for (int b = 0; b < 4; b++) {
+        java.lang.classfile.Label next = cob.newLabel();
+        cob.iload(2);
+        cob.ldc(b);
+        cob.branch(java.lang.classfile.Opcode.IF_ICMPNE, next);
+        cob.lload(0);
+        for (int i = 0; i < 128; i++) {
+          cob.ldc((long) (salt * 131 + b * 997 + i * 17 + 1));
+          cob.lxor();
+          cob.ldc((long) (i + 3 + b));
+          cob.ladd();
+          cob.ldc((long) ((salt ^ i ^ b) + 9));
+          cob.lmul();
+        }
+        cob.goto_(done);
+        cob.labelBinding(next);
+      }
+      cob.lload(0);
+      cob.labelBinding(done);
+      cob.lreturn();
+    });
   }
 
   private static void emitHelper(java.lang.classfile.ClassBuilder clb, String name, int mul) {

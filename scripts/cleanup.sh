@@ -24,6 +24,31 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+prune_run_artifacts() {
+  [[ -d "$ROOT/run-artifacts" ]] || return 0
+  local keep_e2e="" keep_jfr="" d kind
+  while IFS= read -r d; do
+    [[ -f "$d/run-kind" ]] || continue
+    kind="$(tr -d '[:space:]' < "$d/run-kind")"
+    if [[ "$kind" == "e2e" ]]; then
+      keep_e2e="$d"
+    elif [[ "$kind" == "jfr-verify" ]]; then
+      keep_jfr="$d"
+    fi
+  done < <(find "$ROOT/run-artifacts" -mindepth 1 -maxdepth 1 -type d | sort)
+  while IFS= read -r d; do
+    if [[ -n "$keep_e2e" && "$d" == "$keep_e2e" ]]; then
+      continue
+    fi
+    if [[ -n "$keep_jfr" && "$d" == "$keep_jfr" ]]; then
+      continue
+    fi
+    rm -rf "$d"
+    log "removed $d"
+  done < <(find "$ROOT/run-artifacts" -mindepth 1 -maxdepth 1 -type d | sort)
+  log "kept run artifacts: ${keep_e2e:-none} ${keep_jfr:-none}"
+}
+
 require_cmd kubectl
 if kubectl get namespace "$NAMESPACE" >/dev/null 2>&1; then
   kubectl delete namespace "$NAMESPACE" --wait=true
@@ -45,4 +70,5 @@ if [[ "$ALL" == true ]]; then
   done < <(podman manifest ls --format '{{.Name}}' 2>/dev/null | grep 'localhost/jafra-mart-build/' || true)
   podman image prune -f >/dev/null
   log "removed cluster, archives, build manifests, and dangling images"
+  prune_run_artifacts
 fi

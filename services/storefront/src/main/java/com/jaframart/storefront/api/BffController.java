@@ -27,6 +27,7 @@ import java.util.Map;
 @RequestMapping("/api")
 public class BffController {
   private final RestClient catalog;
+  private final RestClient catalogSearch;
   private final RestClient inventory;
   private final RestClient cart;
   private final RestClient orders;
@@ -34,11 +35,13 @@ public class BffController {
 
   public BffController(
       @Qualifier("catalogRestClient") RestClient catalog,
+      @Qualifier("catalogSearchRestClient") RestClient catalogSearch,
       @Qualifier("inventoryRestClient") RestClient inventory,
       @Qualifier("cartRestClient") RestClient cart,
       @Qualifier("ordersRestClient") RestClient orders,
       @Qualifier("recommendationsRestClient") RestClient recommendations) {
     this.catalog = catalog;
+    this.catalogSearch = catalogSearch;
     this.inventory = inventory;
     this.cart = cart;
     this.orders = orders;
@@ -78,7 +81,7 @@ public class BffController {
     if (limit != null) {
       b.queryParam("limit", limit);
     }
-    return Downstream.get(catalog, encode(b));
+    return Downstream.get(catalogSearch, encode(b));
   }
 
   @GetMapping("/catalog/products/{sku}")

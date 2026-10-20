@@ -68,7 +68,7 @@ public class CampaignEngine {
   public synchronized void reset() {
     campaigns.clear();
     lastCreateEpochSec.set(-1);
-    teardownGc.gcOnce();
+    teardownGc.gcNow();
     teardownGcFlag = teardownGc.lastRan();
   }
 

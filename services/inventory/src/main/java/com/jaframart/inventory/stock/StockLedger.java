@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class StockLedger {
   private final AuditTrail auditTrail;
   private final AtomicInteger reservationSeq = new AtomicInteger();
   private final AtomicLong hotSkuCalls = new AtomicLong();
-  private final List<Long> hotWaitSamples = new ArrayList<>();
+  private final ArrayDeque<long[]> hotWaitSamples = new ArrayDeque<>();
   private volatile boolean scenarioActive;
 
   public StockLedger(AuditTrail auditTrail) {
@@ -42,7 +43,7 @@ public class StockLedger {
 
   public void setScenarioIntensity(double ci) {
     this.scenarioActive = ci > 0;
-    auditTrail.setParkNanos(ci > 0 ? Math.round(3_000_000L * ci) : 0);
+    auditTrail.setParkNanos(ci > 0 ? Math.round(6_000_000L * ci) : 0);
   }
 
   public void fillHotWaitlist(long seed, double ci) {
@@ -171,7 +172,10 @@ public class StockLedger {
       if (hotWaitSamples.isEmpty()) {
         return 0;
       }
-      List<Long> copy = new ArrayList<>(hotWaitSamples);
+      List<Long> copy = new ArrayList<>(hotWaitSamples.size());
+      for (long[] sample : hotWaitSamples) {
+        copy.add(sample[1]);
+      }
       copy.sort(Long::compareTo);
       int idx = Math.min(copy.size() - 1, (int) Math.ceil(copy.size() * 0.95) - 1);
       return copy.get(Math.max(0, idx)) / 1_000_000.0;
@@ -191,10 +195,12 @@ public class StockLedger {
     }
     long entered = System.nanoTime();
     hotSkuCalls.incrementAndGet();
+    long nowMs = System.currentTimeMillis();
     synchronized (hotWaitSamples) {
-      hotWaitSamples.add(entered - waitStart);
-      while (hotWaitSamples.size() > 10_000) {
-        hotWaitSamples.remove(0);
+      hotWaitSamples.addLast(new long[] {nowMs, entered - waitStart});
+      long cutoff = nowMs - 10_000L;
+      while (!hotWaitSamples.isEmpty() && hotWaitSamples.peekFirst()[0] < cutoff) {
+        hotWaitSamples.removeFirst();
       }
     }
     stock.recomputeWaitlistPositions();

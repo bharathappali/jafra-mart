@@ -25,6 +25,7 @@ fi
 if [[ -z "${ARTIFACTS:-}" ]]; then
   ARTIFACTS="run-artifacts/$(date -u +%Y%m%dT%H%M%SZ)"
 fi
+export ARTIFACTS
 
 log() { printf '%s\n' "$*"; }
 die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }

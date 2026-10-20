@@ -7,22 +7,25 @@ source "$ROOT/scripts/lib.sh"
 
 usage() {
   cat <<'EOF'
-Usage: scripts/deploy.sh [--registry H] [--repo R] [--components "a b"]
+Usage: scripts/deploy.sh [--registry H] [--repo R] [--components "a b"] [--kustomize DIR]
 
 Creates the namespace and postgres Secret when missing, applies the kustomize
 manifests (optionally limited to namespace, config, postgres, and the named
 components), then waits for rollouts.
+--kustomize DIR applies that directory instead of manifests/ (jfr-verify overlay).
 EOF
 }
 
 SELECTED=""
 FILTER=false
+KUSTOMIZE_DIR="manifests"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --help|-h) usage; exit 0 ;;
     --registry) REGISTRY="$2"; shift 2 ;;
     --repo) REPO="$2"; shift 2 ;;
     --components) SELECTED="$2"; FILTER=true; shift 2 ;;
+    --kustomize) KUSTOMIZE_DIR="$2"; shift 2 ;;
     *) die "unknown argument: $1" ;;
   esac
 done
@@ -39,7 +42,7 @@ fi
 
 rendered="$(mktemp)"
 trap 'rm -f "$rendered"' EXIT
-kubectl kustomize manifests | sed "s#quay.io/bharathappali/jafra-mart#${REGISTRY}/${REPO}#g" > "$rendered"
+kubectl kustomize --load-restrictor LoadRestrictionsNone "$KUSTOMIZE_DIR" | sed "s#quay.io/bharathappali/jafra-mart#${REGISTRY}/${REPO}#g" > "$rendered"
 
 if [[ "$FILTER" == true ]]; then
   filtered="$(mktemp)"
