@@ -10,3 +10,4 @@ resources:
   - 01-config.yaml
   - 05-postgres.yaml
   - 10-catalog-search.yaml
+  - 11-pricing.yaml

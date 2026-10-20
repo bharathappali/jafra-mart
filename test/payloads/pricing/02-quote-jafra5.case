@@ -1,0 +1,6 @@
+METHOD POST
+PATH /api/quote
+BODY {"customerId":"customer007","couponCode":"JAFRA5","items":[{"sku":"SKU-00042","quantity":2}]}
+EXPECT_STATUS 200
+EXPECT_JQ .discountCents == 1300
+EXPECT_JQ .totalCents == 24698

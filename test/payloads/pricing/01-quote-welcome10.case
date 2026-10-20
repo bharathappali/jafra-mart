@@ -1,0 +1,8 @@
+# 01 WELCOME10 exact cents
+METHOD POST
+PATH /api/quote
+BODY {"customerId":"customer007","couponCode":"WELCOME10","items":[{"sku":"SKU-00042","quantity":2}]}
+EXPECT_STATUS 200
+EXPECT_JQ .subtotalCents == 25998
+EXPECT_JQ .discountCents == 2600
+EXPECT_JQ .totalCents == 23398

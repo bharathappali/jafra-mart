@@ -1,0 +1,5 @@
+METHOD GET
+PATH /internal/scenarios
+EXPECT_STATUS 200
+EXPECT_JQ ([.[] | select(.id == "S08")] | .[0].state) == "IDLE"
+EXPECT_JQ ([.[] | select(.id == "S09")] | .[0].state) == "IDLE"

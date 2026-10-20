@@ -1,0 +1,6 @@
+METHOD GET
+PATH /api/campaigns
+EXPECT_STATUS 200
+EXPECT_JQ .rulesLoaded == 3
+EXPECT_JQ .hiddenClassesLive == 0
+EXPECT_JQ .campaignsLive == 0

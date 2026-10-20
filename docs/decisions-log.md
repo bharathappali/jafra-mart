@@ -16,3 +16,6 @@
 - §19.2: `payload-test.sh` iterates `"${expect_jq[@]}"` and `"${expect_headers[@]}"` without a `:-` default. The default expands an empty array to one empty string and makes `jq -e ""` fail every case that has no `EXPECT_JQ`.
 - §8.2: `scenario-clock` runs at `Thread.MAX_PRIORITY` so phase transitions still advance while S01 throttles the container. `scenario-check.sh` waits up to 180 s for the phase sequence and retries status polls that time out under load.
 - §19.3: S01 MiniLoad uses `--concurrency 8` so the Quarkus worker pool (32) still serves `/internal/scenarios` while fuzzy search saturates the 0.5 CPU limit.
+- §13.8/§13.9: pricing teardown `System.gc()` calls coalesce within 2 s so overlapping S08/S09 IDLE transitions share one GC.
+- §10.2: `FLASH20` discount is 20% of the SKU-00042 line subtotal (two units → 5200 cents off of 25998).
+- §13.9: each hidden `Pipe.run` includes 64 salt-specific arithmetic ops around the required `invokeinterface` so nmethods are large enough for `codeCacheUsedPct` to rise by ≥ 15 points on a 40 MiB cache during the short scenario check.
