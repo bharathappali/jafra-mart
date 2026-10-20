@@ -1,0 +1,7 @@
+METHOD POST
+PATH /api/invoices/reprint
+BODY {"count":1}
+EXPECT_STATUS 200
+EXPECT_JQ .reprinted == 1
+EXPECT_JQ .fsyncs >= 1
+EXPECT_JQ .millis >= 0

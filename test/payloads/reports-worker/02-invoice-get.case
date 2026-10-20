@@ -1,0 +1,4 @@
+METHOD GET
+PATH /api/invoices/JM-20261019-000501
+EXPECT_STATUS 200
+EXPECT_HEADER Content-Type: text/plain

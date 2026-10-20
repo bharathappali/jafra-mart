@@ -1,0 +1,7 @@
+METHOD GET
+PATH /api/reports/exports/orders?rows=1000
+EXPECT_STATUS 200
+EXPECT_JQ .rows == 1000
+EXPECT_JQ (.sha256 | length) == 64
+EXPECT_JQ .bytes > 0
+EXPECT_JQ .millis >= 0

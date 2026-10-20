@@ -1,0 +1,6 @@
+METHOD POST
+PATH /api/invoices
+BODY {"orderNumber":"JM-20261019-000501","customerId":"customer001","customerName":"Asha Rao","status":"PLACED","subtotalCents":12999,"discountCents":0,"totalCents":12999,"paymentId":"P-000501","createdAt":"2026-10-19T12:00:00.000Z","items":[{"sku":"SKU-00042","productName":"Frosted Glass Smart Lamp","quantity":1,"unitPriceCents":12999}]}
+EXPECT_STATUS 202
+EXPECT_JQ .orderNumber == "JM-20261019-000501"
+EXPECT_JQ .queued == true

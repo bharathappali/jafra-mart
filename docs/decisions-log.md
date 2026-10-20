@@ -23,3 +23,8 @@
 - §13.7: coupon storm adds three extra `InvalidCouponException` fills per failing rule so MiniLoad at 200 rps clears the 20,000 hold delta on a 0.5 CPU cart.
 - §13.12: `NativeRiskScorer` comparator reads ints via `MemorySegment.reinterpret`; surefire/failsafe pass `--enable-native-access=ALL-UNNAMED` so the FFM linkage unit test runs outside the pod JAVA_OPTS.
 - §19.3: S03 hold probe runs during HOLDING (not after IDLE) because `onReset` restores `baseLatencyMs=40` before the post-IDLE hold_check would otherwise run.
+- §10.8: invoice text is padded to exactly 6144 bytes (`InvoiceRenderer.TARGET_BYTES`) so baseline writes stay ~6 KB without a prescribed layout.
+- §10.8 / §13.11: `POST /api/invoices/reprint` rewrites the newest projections synchronously via `writeNow` (same baseline/durable paths as queue workers) so MiniLoad reprints still drive `fsyncs`.
+- §13.6: export-slot reduction on guard trip uses `Semaphore.tryAcquire()` to drop from 2 permits to 1; restore releases one permit.
+- §13.6 / Spring Boot 4.1.1: naive export uses `tools.jackson.databind.ObjectMapper` (Jackson 3 package) because Boot 4 no longer exposes `com.fasterxml.jackson.databind` on the compile classpath.
+- §13.6: naive export rows are lean (7 boxed fields, no nested items) so two concurrent 50k-row exports stay within the 256 MiB Parallel heap; full order projections OOMed under MiniLoad concurrency 2.

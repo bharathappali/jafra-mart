@@ -1,0 +1,22 @@
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 50
+spring:
+  application:
+    name: reports-worker
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+logging:
+  level:
+    root: WARN
+    com.jaframart.scenario: INFO
+    com.jaframart.reports: INFO

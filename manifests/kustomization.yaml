@@ -14,3 +14,4 @@ resources:
   - 12-inventory.yaml
   - 13-cart.yaml
   - 14-payments.yaml
+  - 15-reports-worker.yaml

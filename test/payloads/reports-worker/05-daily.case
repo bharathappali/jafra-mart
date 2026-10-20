@@ -1,0 +1,6 @@
+METHOD GET
+PATH /api/reports/daily
+EXPECT_STATUS 200
+EXPECT_JQ .invoices >= 1
+EXPECT_JQ .exports >= 1
+EXPECT_JQ .lastReconciliation != null
