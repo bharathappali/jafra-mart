@@ -1,0 +1,7 @@
+# add flash SKU to cart
+METHOD POST
+PATH /api/cart/items
+BODY {"sku":"SKU-00042","quantity":1}
+EXPECT_STATUS 200
+EXPECT_JQ .items[0].sku == "SKU-00042"
+EXPECT_JQ .items[0].quantity == 1

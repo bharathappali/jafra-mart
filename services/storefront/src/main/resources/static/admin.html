@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>JafraMart Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <header class="header card">
+    <div class="brand">JafraMart Admin</div>
+    <span id="who" class="muted"></span>
+    <button type="button" class="secondary" id="btn-logout">Logout</button>
+  </header>
+
+  <main class="page">
+    <nav class="tabs" aria-label="Admin tabs">
+      <button type="button" class="tab active" data-tab="dashboard">Dashboard</button>
+      <button type="button" class="tab" data-tab="orders">Orders</button>
+      <button type="button" class="tab" data-tab="customers">Customers</button>
+      <button type="button" class="tab" data-tab="scenarios">Scenarios</button>
+      <button type="button" class="tab" data-tab="timeline">Timeline</button>
+      <button type="button" class="tab" data-tab="services">Services</button>
+    </nav>
+
+    <section data-tab-panel="dashboard">
+      <div class="kpi-row">
+        <div class="card kpi"><div class="label">Orders total</div><div class="value" id="kpi-orders">—</div></div>
+        <div class="card kpi"><div class="label">Revenue</div><div class="value" id="kpi-revenue">—</div></div>
+        <div class="card kpi"><div class="label">Revenue last 5 min</div><div class="value" id="kpi-rev5">—</div></div>
+        <div class="card kpi"><div class="label">Active customers</div><div class="value" id="kpi-customers">—</div></div>
+      </div>
+      <div class="card panel">
+        <h2>Orders per minute</h2>
+        <div id="opm-chart"></div>
+      </div>
+      <div class="card panel">
+        <h2>Live orders</h2>
+        <ol id="live-orders"></ol>
+      </div>
+      <div class="card panel">
+        <h2>Top customers</h2>
+        <table>
+          <thead><tr><th>Id</th><th>Name</th><th>Orders</th><th>Total</th></tr></thead>
+          <tbody id="top-customers"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section data-tab-panel="orders" class="hidden">
+      <div class="field">
+        <label for="order-filter">Customer id filter</label>
+        <input id="order-filter" type="text">
+      </div>
+      <button type="button" id="btn-filter-orders">Load</button>
+      <div class="card panel">
+        <table>
+          <thead><tr><th>Number</th><th>Time</th><th>Customer</th><th>Status</th><th>Total</th><th>Items</th></tr></thead>
+          <tbody id="orders-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section data-tab-panel="customers" class="hidden">
+      <div class="card panel">
+        <table>
+          <thead><tr><th>Id</th><th>Name</th><th>Orders</th><th>Total</th></tr></thead>
+          <tbody id="customers-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section data-tab-panel="scenarios" class="hidden">
+      <p id="loadgen-notice" class="card panel warning hidden">loadgen not deployed</p>
+      <div class="header card">
+        <div class="field">
+          <label for="seed">Seed</label>
+          <input id="seed" type="number" value="20261019">
+        </div>
+        <div class="field">
+          <label for="time-scale">Time scale</label>
+          <select id="time-scale">
+            <option value="1.0">1.0</option>
+            <option value="0.5">0.5</option>
+            <option value="0.1">0.1</option>
+          </select>
+        </div>
+        <button type="button" id="btn-run-script">Run 30-min script</button>
+        <button type="button" class="secondary" id="btn-stop-run">Stop run</button>
+        <button type="button" class="warning" id="btn-reset-all">Reset all</button>
+        <span id="run-status" class="muted"></span>
+      </div>
+      <div id="scenario-cards"></div>
+    </section>
+
+    <section data-tab-panel="timeline" class="hidden">
+      <p class="muted">Planned vs actual scenario phases.</p>
+      <div id="timeline-view" class="card panel"></div>
+      <p><a id="gt-link" href="#">Download ground truth (JSONL)</a></p>
+    </section>
+
+    <section data-tab-panel="services" class="hidden">
+      <div id="services-grid" class="services-grid"></div>
+    </section>
+  </main>
+  <script type="module" src="/js/admin.js"></script>
+</body>
+</html>

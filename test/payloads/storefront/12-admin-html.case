@@ -1,0 +1,5 @@
+# admin page HTML
+METHOD GET
+PATH /admin.html
+EXPECT_STATUS 200
+EXPECT_HEADER Content-Type: text/html

@@ -1,0 +1,27 @@
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 100
+  servlet:
+    session:
+      cookie:
+        name: JSESSIONID
+        http-only: true
+        same-site: lax
+spring:
+  application:
+    name: storefront
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+logging:
+  level:
+    root: WARN
+    com.jaframart.scenario: INFO

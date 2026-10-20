@@ -1,0 +1,4 @@
+# logout
+METHOD POST
+PATH /api/auth/logout
+EXPECT_STATUS 204

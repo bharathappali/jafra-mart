@@ -1,0 +1,7 @@
+# admin login
+METHOD POST
+PATH /api/auth/login
+BODY {"username":"admin","password":"admin"}
+EXPECT_STATUS 200
+EXPECT_JQ .username == "admin"
+EXPECT_JQ .roles == ["ADMIN"]

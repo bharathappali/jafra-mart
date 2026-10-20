@@ -1,0 +1,5 @@
+# shop page HTML
+METHOD GET
+PATH /shop.html
+EXPECT_STATUS 200
+EXPECT_HEADER Content-Type: text/html

@@ -1,0 +1,6 @@
+# my orders contains checkout
+METHOD GET
+PATH /api/orders/mine
+EXPECT_STATUS 200
+EXPECT_JQ length >= 1
+EXPECT_JQ .[0].orderNumber | test("^JM-[0-9]{8}-[0-9]{6}$")

@@ -1,0 +1,5 @@
+# user cannot read admin summary
+METHOD GET
+PATH /api/admin/summary
+EXPECT_STATUS 403
+EXPECT_JQ .error == "FORBIDDEN"

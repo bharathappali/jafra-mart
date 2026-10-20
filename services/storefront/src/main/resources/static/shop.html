@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>JafraMart Shop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <header class="header card">
+    <div class="brand">JafraMart</div>
+    <label class="hidden" for="search-q">Search</label>
+    <input id="search-q" type="search" placeholder="Search products" aria-label="Search products">
+    <label><input id="fuzzy-toggle" type="checkbox"> Did you mean (fuzzy)</label>
+    <button type="button" id="btn-cart">Cart (<span id="cart-count">0</span>)</button>
+    <button type="button" class="secondary" id="btn-orders">My orders</button>
+    <span id="who" class="muted"></span>
+    <button type="button" class="secondary" id="btn-logout">Logout</button>
+  </header>
+
+  <main class="page">
+    <div id="flash-banner" class="card banner hidden">
+      <strong id="flash-text"></strong>
+      <span id="flash-stock"></span>
+    </div>
+    <div id="chips" class="chips"></div>
+    <div id="product-grid" class="grid"></div>
+    <div class="header">
+      <button type="button" id="prev-page">Previous</button>
+      <span id="page-label"></span>
+      <button type="button" id="next-page">Next</button>
+    </div>
+
+    <section id="product-dialog" class="card dialog hidden" aria-label="Product details">
+      <button type="button" class="secondary" id="pd-close">Close</button>
+      <img id="pd-thumb" alt="" width="256" height="256">
+      <h2 id="pd-name"></h2>
+      <p id="pd-price"></p>
+      <p id="pd-avail"></p>
+      <div class="field">
+        <label for="pd-qty">Quantity</label>
+        <input id="pd-qty" type="number" min="1" max="10" value="1">
+      </div>
+      <button type="button" id="pd-add">Add to cart</button>
+      <h3>Customers also bought</h3>
+      <div id="pd-recs" class="chips"></div>
+    </section>
+
+    <aside id="cart-drawer" class="card drawer hidden" aria-label="Cart">
+      <button type="button" class="secondary" id="cart-close">Close</button>
+      <h2>Cart</h2>
+      <div id="cart-lines"></div>
+      <p id="cart-subtotal"></p>
+      <div class="field">
+        <label for="coupon-code">Coupon</label>
+        <input id="coupon-code" type="text">
+      </div>
+      <button type="button" class="secondary" id="btn-coupon">Apply coupon</button>
+      <p id="coupon-msg"></p>
+      <div class="field">
+        <label for="card-token">Card</label>
+        <select id="card-token">
+          <option value="tok_visa">Visa •••• 4242</option>
+          <option value="tok_decline">Declined test card</option>
+        </select>
+      </div>
+      <button type="button" id="btn-checkout">Place order</button>
+    </aside>
+
+    <section id="confirm-panel" class="card panel hidden"></section>
+    <section id="orders-panel" class="hidden"></section>
+  </main>
+  <script type="module" src="/js/shop.js"></script>
+</body>
+</html>

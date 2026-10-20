@@ -30,6 +30,8 @@ Public demo logins (not secrets):
 | `admin` | `admin` | admin |
 | `customer001` … `customer200` | `customer` | shoppers used by the load generator |
 
+The storefront is a demo BFF: session cookie `JSESSIONID` is `HttpOnly` with `SameSite=Lax`, and **CSRF protection is disabled** so the vanilla UI and loadgen can call JSON APIs with the session cookie alone.
+
 ## Contributing
 
 Open pull requests to `main` in this order, and merge each with **Create a merge commit** (not squash, not rebase):

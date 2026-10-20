@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>JafraMart Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="login-wrap">
+    <form class="card login-card" id="login-form">
+      <div class="brand">JafraMart</div>
+      <p class="muted">Sign in to shop or manage the demo.</p>
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" name="username" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button type="submit">Sign in</button>
+      <p class="muted" id="hint">Demo logins: user / user, admin / admin</p>
+      <p class="error hidden" id="error"></p>
+    </form>
+  </div>
+  <script type="module">
+    import { api } from './js/api.js';
+    const form = document.getElementById('login-form');
+    const error = document.getElementById('error');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      error.classList.add('hidden');
+      try {
+        const me = await api('/api/auth/login', {
+          method: 'POST',
+          body: {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+          },
+        });
+        const roles = me.roles || [];
+        location.href = roles.includes('ADMIN') ? '/admin.html' : '/shop.html';
+      } catch (err) {
+        error.textContent = err.body?.message || 'Login failed';
+        error.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

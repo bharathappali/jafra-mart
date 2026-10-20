@@ -1,0 +1,5 @@
+# anonymous me is 401
+METHOD GET
+PATH /api/me
+EXPECT_STATUS 401
+EXPECT_JQ .error == "UNAUTHORIZED"

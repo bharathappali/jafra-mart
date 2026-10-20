@@ -1,0 +1,7 @@
+# admin summary
+METHOD GET
+PATH /api/admin/summary
+EXPECT_STATUS 200
+EXPECT_JQ .ordersTotal >= 0
+EXPECT_JQ .revenueCents >= 0
+EXPECT_JQ .activeCustomers >= 0

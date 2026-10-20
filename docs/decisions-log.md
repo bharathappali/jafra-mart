@@ -40,3 +40,10 @@
 - §10.6: JDBC insert requests generated key column `id` only; Postgres `RETURN_GENERATED_KEYS` otherwise returns the whole row and `KeyHolder.getKey()` fails.
 - §13.4: burst detection also runs on intensity ticks and skips the 5 s cooldown when zero pools were created, so a MiniLoad burst that lands at ci=0 still leaks after the next tick.
 - §13.4: `threadCount` metric is `ThreadMXBean.getThreadCount()` (JVM-wide), matching the ≈60→≈380 symptom; leaked-pool threads alone stay below the short-check threshold of 90.
+- §9.2: one `{bcrypt}` hash is computed per distinct password literal (`admin`/`user`/`customer`) and reused for the 200 customer accounts.
+- §9.2: admin `displayName` is `Admin` (not in catalog-model customers).
+- §10.9: cart BFF paths are `/api/cart`, `/api/cart/items`, `/api/cart/items/{sku}`, `/api/cart/coupon` (customerId taken from the session).
+- §10.9: conductor proxy strips `/api/admin/conductor` and prefixes `/api` on loadgen; UI shows `loadgen not deployed` when the proxy fails.
+- §10.9 / Spring Security 7: login JSON `roles` filters to `ROLE_USER`/`ROLE_ADMIN` only (drops `FACTOR_PASSWORD`).
+- §10.9: BFF responses set Content-Type + Content-Length only (drop upstream Transfer-Encoding) so curl/cookie-jar clients get a framed body.
+- §17: `kind-load.sh` restarts an existing Deployment after loading so IfNotPresent pods pick up the new same-tag image.

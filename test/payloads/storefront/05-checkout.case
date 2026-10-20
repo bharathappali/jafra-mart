@@ -1,0 +1,8 @@
+# checkout through BFF
+METHOD POST
+PATH /api/checkout
+BODY {"cardToken":"tok_visa"}
+EXPECT_STATUS 201
+EXPECT_JQ .status == "PLACED"
+EXPECT_JQ .orderNumber | test("^JM-[0-9]{8}-[0-9]{6}$")
+EXPECT_JQ .totalCents > 0

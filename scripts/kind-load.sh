@@ -49,4 +49,8 @@ for c in $SELECTED; do
   log "building $image for linux/${NATIVE_ARCH}"
   podman build --platform "linux/${NATIVE_ARCH}" -t "$image" -f "$df" .
   load_archive "/tmp/jafra-mart-${c}.tar" "$image"
+  # Same tag + imagePullPolicy IfNotPresent does not refresh running pods; restart when present.
+  if command -v kubectl >/dev/null 2>&1 && kubectl -n "$NAMESPACE" get deploy "$c" >/dev/null 2>&1; then
+    kubectl -n "$NAMESPACE" rollout restart "deploy/${c}"
+  fi
 done

@@ -17,3 +17,4 @@ resources:
   - 15-reports-worker.yaml
   - 16-recommendations.yaml
   - 17-orders.yaml
+  - 18-storefront.yaml

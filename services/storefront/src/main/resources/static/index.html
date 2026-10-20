@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>JafraMart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<script type="module">
+import { api } from './js/api.js';
+try {
+  const me = await api('/api/me');
+  const roles = me.roles || [];
+  location.replace(roles.includes('ADMIN') && !roles.includes('USER') ? '/admin.html' : '/shop.html');
+} catch {
+  location.replace('/login.html');
+}
+</script>
+</body>
+</html>

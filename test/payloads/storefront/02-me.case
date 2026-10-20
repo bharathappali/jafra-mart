@@ -1,0 +1,6 @@
+# current user
+METHOD GET
+PATH /api/me
+EXPECT_STATUS 200
+EXPECT_JQ .username == "user"
+EXPECT_JQ .displayName == "Demo User"
