@@ -1,0 +1,5 @@
+METHOD POST
+PATH /api/payments/authorize
+BODY {"orderNumber":"JM-20261019-000123","customerId":"user","amountCents":23398,"currency":"USD","cardToken":"tok_visa"}
+EXPECT_STATUS 200
+EXPECT_JQ .status == "AUTHORIZED" and .paymentId == "P-000123"

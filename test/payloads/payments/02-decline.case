@@ -1,0 +1,5 @@
+METHOD POST
+PATH /api/payments/authorize
+BODY {"orderNumber":"JM-20261019-000124","customerId":"user","amountCents":1000,"currency":"USD","cardToken":"tok_decline"}
+EXPECT_STATUS 200
+EXPECT_JQ .status == "DECLINED"

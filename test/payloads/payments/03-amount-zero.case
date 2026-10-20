@@ -1,0 +1,5 @@
+METHOD POST
+PATH /api/payments/authorize
+BODY {"orderNumber":"JM-20261019-000125","customerId":"user","amountCents":0,"currency":"USD","cardToken":"tok_visa"}
+EXPECT_STATUS 400
+EXPECT_JQ .error == "BAD_REQUEST"

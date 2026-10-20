@@ -113,6 +113,7 @@ hold_status=""
 hold_cpu_start=""
 hold_cpu_end=""
 hold_exc_start=""
+hold_probe_latency=""
 deadline=$((SECONDS + 180))
 while [[ $SECONDS -lt $deadline ]]; do
   status_json="$(curl -sf --max-time 3 "${base}/internal/scenarios/${ID}" || true)"
@@ -133,6 +134,13 @@ while [[ $SECONDS -lt $deadline ]]; do
       fi
       hold_status="$status_json"
       hold_cpu_end="$(cpu_stat || true)"
+      if [[ "$ID" == "S03" && -z "$hold_probe_latency" ]]; then
+        hold_probe="$(curl -sf --max-time 5 -X POST "${base}/api/payments/authorize" -H 'content-type: application/json' \
+          -d '{"orderNumber":"JM-PROBE-HOLD","customerId":"user","amountCents":1000,"currency":"USD","cardToken":"tok_visa"}' || true)"
+        if [[ -n "$hold_probe" ]]; then
+          hold_probe_latency="$(jq -r '.latencyMs' <<<"$hold_probe")"
+        fi
+      fi
       ;;
     RECOVERING) seen_v=1 ;;
     IDLE)
@@ -169,9 +177,7 @@ hold_check() {
       [[ $((end - hold_exc_start)) -ge 20000 ]] || die "S07 exceptions"
       ;;
     S03)
-      probe="$(curl -sf -X POST "${base}/api/payments/authorize" -H 'content-type: application/json' \
-        -d '{"orderNumber":"JM-PROBE-HOLD","customerId":"user","amountCents":1000,"currency":"USD","cardToken":"tok_visa"}')"
-      awk -v v="$(jq -r '.latencyMs' <<<"$probe")" 'BEGIN { exit !(v >= 800) }' || die "S03 latency"
+      awk -v v="${hold_probe_latency:-0}" 'BEGIN { exit !(v >= 800) }' || die "S03 latency"
       ;;
     S12)
       [[ "$(metric pinnedScoringCalls "$hold_status")" -ge 50 ]] || die "S12 pinned"

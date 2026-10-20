@@ -20,3 +20,6 @@
 - §10.2: `FLASH20` discount is 20% of the SKU-00042 line subtotal (two units → 5200 cents off of 25998).
 - §13.9: each hidden `Pipe.run` includes 64 salt-specific arithmetic ops around the required `invokeinterface` so nmethods are large enough for `codeCacheUsedPct` to rise by ≥ 15 points on a 40 MiB cache during the short scenario check.
 - §19.3: S07 MiniLoad uses `--concurrency 16` so the cart 0.5 CPU limit still completes enough coupon checks for the exceptions threshold.
+- §13.7: coupon storm adds three extra `InvalidCouponException` fills per failing rule so MiniLoad at 200 rps clears the 20,000 hold delta on a 0.5 CPU cart.
+- §13.12: `NativeRiskScorer` comparator reads ints via `MemorySegment.reinterpret`; surefire/failsafe pass `--enable-native-access=ALL-UNNAMED` so the FFM linkage unit test runs outside the pod JAVA_OPTS.
+- §19.3: S03 hold probe runs during HOLDING (not after IDLE) because `onReset` restores `baseLatencyMs=40` before the post-IDLE hold_check would otherwise run.

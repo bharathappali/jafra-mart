@@ -1,0 +1,4 @@
+METHOD GET
+PATH /api/payments/P-000123
+EXPECT_STATUS 200
+EXPECT_JQ .paymentId == "P-000123"

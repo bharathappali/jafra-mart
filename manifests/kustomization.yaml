@@ -13,3 +13,4 @@ resources:
   - 11-pricing.yaml
   - 12-inventory.yaml
   - 13-cart.yaml
+  - 14-payments.yaml

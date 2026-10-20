@@ -14,5 +14,7 @@
     <module>services/pricing</module>
     <module>services/inventory</module>
     <module>services/cart</module>
+    <module>services/payments</module>
   </modules>
 </project>
+

@@ -1,0 +1,4 @@
+METHOD GET
+PATH /api/info
+EXPECT_STATUS 200
+EXPECT_JQ .component == "payments"
