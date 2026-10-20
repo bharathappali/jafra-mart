@@ -87,7 +87,7 @@ if [[ ${#EXTRA[@]} -gt 0 ]]; then
   PIDS+=("$!")
 else
   case "$ID" in
-    S01) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/search?fuzzy=true&limit=20&q=frostd%20glass%20lmp" --method GET --rps 60 --seconds 55 ;;
+    S01) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/search?fuzzy=true&limit=20&q=frostd%20glass%20lmp" --method GET --rps 60 --seconds 55 --concurrency 8 ;;
     S10) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/products/SKU-{seq5}/thumbnail?size=256" --method GET --rps 20 --seconds 55 ;;
     S09) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/quote" --method POST --body '{"customerId":"customer007","couponCode":"WELCOME10","items":[{"sku":"SKU-00042","quantity":2}]}' --rps 10 --seconds 55 ;;
     S02) java "$ROOT/scripts/MiniLoad.java" --url "${base}/api/inventory/SKU-00042" --method GET --rps 200 --seconds 55 ;;
@@ -113,9 +113,13 @@ hold_status=""
 hold_cpu_start=""
 hold_cpu_end=""
 hold_exc_start=""
-deadline=$((SECONDS + 90))
+deadline=$((SECONDS + 180))
 while [[ $SECONDS -lt $deadline ]]; do
-  status_json="$(curl -sf "${base}/internal/scenarios/${ID}")"
+  status_json="$(curl -sf --max-time 3 "${base}/internal/scenarios/${ID}" || true)"
+  if [[ -z "$status_json" ]]; then
+    sleep 2
+    continue
+  fi
   state="$(jq -r '.state' <<<"$status_json")"
   case "$state" in
     RAMPING) seen_r=1 ;;

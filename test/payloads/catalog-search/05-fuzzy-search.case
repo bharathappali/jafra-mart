@@ -1,0 +1,6 @@
+# 05 fuzzy search finds the flash SKU
+METHOD GET
+PATH /api/search?q=frostd%20lmp&limit=20&fuzzy=true
+EXPECT_STATUS 200
+EXPECT_JQ .fuzzy == true
+EXPECT_JQ ([.items[].sku] | index("SKU-00042")) != null

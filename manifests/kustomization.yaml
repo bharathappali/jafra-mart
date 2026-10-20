@@ -9,3 +9,4 @@ resources:
   - 00-namespace.yaml
   - 01-config.yaml
   - 05-postgres.yaml
+  - 10-catalog-search.yaml

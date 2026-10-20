@@ -10,5 +10,6 @@
   <modules>
     <module>common/catalog-model</module>
     <module>common/scenario-core</module>
+    <module>services/catalog-search</module>
   </modules>
 </project>

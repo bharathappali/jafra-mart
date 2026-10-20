@@ -33,6 +33,7 @@ public final class ScenarioRegistry implements AutoCloseable {
       clock = Executors.newSingleThreadScheduledExecutor(runnable -> {
         Thread thread = new Thread(runnable, "scenario-clock");
         thread.setDaemon(true);
+        thread.setPriority(Thread.MAX_PRIORITY);
         return thread;
       });
       clock.scheduleAtFixedRate(this::tickAll, 1000, 1000, TimeUnit.MILLISECONDS);

@@ -1,0 +1,7 @@
+# 06 flash banner
+METHOD GET
+PATH /api/flash
+EXPECT_STATUS 200
+EXPECT_JQ .active == false
+EXPECT_JQ .sku == "SKU-00042"
+EXPECT_JQ .discountPercent == 20

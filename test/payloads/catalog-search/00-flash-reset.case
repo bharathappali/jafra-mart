@@ -1,0 +1,7 @@
+# 00 reset flash banner so subsequent GET cases start from inactive
+METHOD PUT
+PATH /api/flash
+HEADER Content-Type: application/json
+BODY {"active":false}
+EXPECT_STATUS 200
+EXPECT_JQ .active == false

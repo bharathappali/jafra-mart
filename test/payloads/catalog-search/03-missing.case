@@ -1,0 +1,5 @@
+# 03 missing product
+METHOD GET
+PATH /api/products/SKU-99999
+EXPECT_STATUS 404
+EXPECT_JQ .error == "NOT_FOUND"

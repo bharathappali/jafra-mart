@@ -104,18 +104,22 @@ for c in "$@"; do
     if [[ "$code" != "$expect" ]]; then
       ok=0
     fi
-    for expr in "${expect_jq[@]:-}"; do
-      if ! jq -e "$expr" "$out" >/dev/null; then
-        ok=0
-      fi
-    done
-    for eh in "${expect_headers[@]:-}"; do
-      hk="${eh%%:*}"
-      hv="$(echo "${eh#*:}" | sed 's/^ *//')"
-      if ! grep -i "^${hk}:" "$hdr" | grep -q "$hv"; then
-        ok=0
-      fi
-    done
+    if ((${#expect_jq[@]} > 0)); then
+      for expr in "${expect_jq[@]}"; do
+        if ! jq -e "$expr" "$out" >/dev/null; then
+          ok=0
+        fi
+      done
+    fi
+    if ((${#expect_headers[@]} > 0)); then
+      for eh in "${expect_headers[@]}"; do
+        hk="${eh%%:*}"
+        hv="$(echo "${eh#*:}" | sed 's/^ *//')"
+        if ! grep -i "^${hk}:" "$hdr" | grep -q "$hv"; then
+          ok=0
+        fi
+      done
+    fi
     if [[ -n "$prefix" ]]; then
       got="$(od -An -tx1 "$out" | tr -d ' \n' | tr 'a-f' 'A-F')"
       want="$(printf '%s' "$prefix" | tr 'a-f' 'A-F')"

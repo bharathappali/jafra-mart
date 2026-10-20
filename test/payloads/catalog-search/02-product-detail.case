@@ -1,0 +1,8 @@
+# 02 flash sale product
+METHOD GET
+PATH /api/products/SKU-00042
+EXPECT_STATUS 200
+EXPECT_JQ .sku == "SKU-00042"
+EXPECT_JQ .priceCents == 12999
+EXPECT_JQ .name == "Frosted Glass Smart Lamp"
+EXPECT_JQ .category == "Home"

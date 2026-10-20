@@ -1,0 +1,7 @@
+# 04 exact search
+METHOD GET
+PATH /api/search?q=lamp&limit=20&fuzzy=false
+EXPECT_STATUS 200
+EXPECT_JQ .query == "lamp"
+EXPECT_JQ .fuzzy == false
+EXPECT_JQ .count == 20

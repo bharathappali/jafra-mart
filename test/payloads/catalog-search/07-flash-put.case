@@ -1,0 +1,8 @@
+# 07 turn the flash banner on
+METHOD PUT
+PATH /api/flash
+HEADER Content-Type: application/json
+BODY {"active":true}
+EXPECT_STATUS 200
+EXPECT_JQ .active == true
+EXPECT_JQ .discountPercent == 20

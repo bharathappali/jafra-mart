@@ -1,0 +1,8 @@
+# 01 product page
+METHOD GET
+PATH /api/products?page=0&size=24&category=Home
+EXPECT_STATUS 200
+EXPECT_JQ .page == 0
+EXPECT_JQ .size == 24
+EXPECT_JQ .total > 0
+EXPECT_JQ (.items | length) > 0

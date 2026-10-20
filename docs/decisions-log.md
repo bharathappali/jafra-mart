@@ -11,3 +11,8 @@
 - §7.2: plain-module tests use JUnit assertions. AssertJ is allowed and not required.
 - §17: `MiniLoad` uses a 15 s HTTP request timeout, matching the loadgen client timeout in §3.3.
 - §18.1: `git config user.signingkey` is unset. `git commit -S` selects the secret key whose uid matches `user.email` (`DED0F574DDB444527D3C36FFB91F8CFEAC8627DD`). Git config is not modified.
+- §13.1: fuzzy score is the minimum full Damerau-Levenshtein distance between each query variant and each name token. The DP itself has no early exit; once a product already has best distance 0, remaining variant/token pairs for that product are skipped. The CPU sanity test warms with eight full fuzzy searches before asserting the p50 is in 5–80 ms (a single cold call on this laptop was about 82–90 ms).
+- §15: `loadgen/.gitkeep` exists so the catalog-search Dockerfile can `COPY loadgen` before that module is implemented.
+- §19.2: `payload-test.sh` iterates `"${expect_jq[@]}"` and `"${expect_headers[@]}"` without a `:-` default. The default expands an empty array to one empty string and makes `jq -e ""` fail every case that has no `EXPECT_JQ`.
+- §8.2: `scenario-clock` runs at `Thread.MAX_PRIORITY` so phase transitions still advance while S01 throttles the container. `scenario-check.sh` waits up to 180 s for the phase sequence and retries status polls that time out under load.
+- §19.3: S01 MiniLoad uses `--concurrency 8` so the Quarkus worker pool (32) still serves `/internal/scenarios` while fuzzy search saturates the 0.5 CPU limit.

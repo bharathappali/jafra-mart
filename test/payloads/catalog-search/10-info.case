@@ -1,0 +1,7 @@
+# 10 info
+METHOD GET
+PATH /api/info
+EXPECT_STATUS 200
+EXPECT_JQ .component == "catalog-search"
+EXPECT_JQ .framework == "quarkus 3.40.1"
+EXPECT_JQ .gc == "G1"
