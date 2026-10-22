@@ -34,3 +34,6 @@ target/
 *.tar
 kubeconfig*
 .env
+
+instruct/
+
