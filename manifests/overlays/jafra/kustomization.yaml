@@ -33,7 +33,9 @@ patches:
           jafra.io/mode: "continuous"
         annotations:
           jafra.io/containers: "catalog-search"
-          jafra.io/chunktime: "5s"
+          jafra.io/profile: "medium"
+          jafra.io/jdk-nmt: "enabled"
+          jafra.io/latency-threshold: "500ms"
       spec:
         template:
           metadata:
@@ -42,7 +44,9 @@ patches:
               jafra.io/mode: "continuous"
             annotations:
               jafra.io/containers: "catalog-search"
-              jafra.io/chunktime: "5s"
+              jafra.io/profile: "medium"
+              jafra.io/jdk-nmt: "enabled"
+              jafra.io/latency-threshold: "500ms"
   - target:
       kind: Deployment
       name: pricing
@@ -56,7 +60,9 @@ patches:
           jafra.io/mode: "continuous"
         annotations:
           jafra.io/containers: "pricing"
-          jafra.io/chunktime: "5s"
+          jafra.io/profile: "medium"
+          jafra.io/jdk-nmt: "enabled"
+          jafra.io/latency-threshold: "500ms"
       spec:
         template:
           metadata:
@@ -65,7 +71,9 @@ patches:
               jafra.io/mode: "continuous"
             annotations:
               jafra.io/containers: "pricing"
-              jafra.io/chunktime: "5s"
+              jafra.io/profile: "medium"
+              jafra.io/jdk-nmt: "enabled"
+              jafra.io/latency-threshold: "500ms"
   - target:
       kind: Deployment
       name: inventory
@@ -79,7 +87,9 @@ patches:
           jafra.io/mode: "continuous"
         annotations:
           jafra.io/containers: "inventory"
-          jafra.io/chunktime: "5s"
+          jafra.io/profile: "medium"
+          jafra.io/jdk-nmt: "enabled"
+          jafra.io/latency-threshold: "500ms"
       spec:
         template:
           metadata:
@@ -88,7 +98,9 @@ patches:
               jafra.io/mode: "continuous"
             annotations:
               jafra.io/containers: "inventory"
-              jafra.io/chunktime: "5s"
+              jafra.io/profile: "medium"
+              jafra.io/jdk-nmt: "enabled"
+              jafra.io/latency-threshold: "500ms"
   - target:
       kind: Deployment
       name: cart
@@ -102,7 +114,9 @@ patches:
           jafra.io/mode: "continuous"
         annotations:
           jafra.io/containers: "cart"
-          jafra.io/chunktime: "5s"
+          jafra.io/profile: "medium"
+          jafra.io/jdk-nmt: "enabled"
+          jafra.io/latency-threshold: "500ms"
       spec:
         template:
           metadata:
@@ -111,7 +125,9 @@ patches:
               jafra.io/mode: "continuous"
             annotations:
               jafra.io/containers: "cart"
-              jafra.io/chunktime: "5s"
+              jafra.io/profile: "medium"
+              jafra.io/jdk-nmt: "enabled"
+              jafra.io/latency-threshold: "500ms"
   - target:
       kind: Deployment
       name: payments
@@ -125,7 +141,9 @@ patches:
           jafra.io/mode: "continuous"
         annotations:
           jafra.io/containers: "payments"
-          jafra.io/chunktime: "5s"
+          jafra.io/profile: "medium"
+          jafra.io/jdk-nmt: "enabled"
+          jafra.io/latency-threshold: "500ms"
       spec:
         template:
           metadata:
@@ -134,7 +152,9 @@ patches:
               jafra.io/mode: "continuous"
             annotations:
               jafra.io/containers: "payments"
-              jafra.io/chunktime: "5s"
+              jafra.io/profile: "medium"
+              jafra.io/jdk-nmt: "enabled"
+              jafra.io/latency-threshold: "500ms"
   - target:
       kind: Deployment
       name: reports-worker
@@ -148,7 +168,9 @@ patches:
           jafra.io/mode: "continuous"
         annotations:
           jafra.io/containers: "reports-worker"
-          jafra.io/chunktime: "5s"
+          jafra.io/profile: "medium"
+          jafra.io/jdk-nmt: "enabled"
+          jafra.io/latency-threshold: "500ms"
       spec:
         template:
           metadata:
@@ -157,7 +179,9 @@ patches:
               jafra.io/mode: "continuous"
             annotations:
               jafra.io/containers: "reports-worker"
-              jafra.io/chunktime: "5s"
+              jafra.io/profile: "medium"
+              jafra.io/jdk-nmt: "enabled"
+              jafra.io/latency-threshold: "500ms"
   - target:
       kind: Deployment
       name: recommendations
@@ -171,7 +195,9 @@ patches:
           jafra.io/mode: "continuous"
         annotations:
           jafra.io/containers: "recommendations"
-          jafra.io/chunktime: "5s"
+          jafra.io/profile: "medium"
+          jafra.io/jdk-nmt: "enabled"
+          jafra.io/latency-threshold: "500ms"
       spec:
         template:
           metadata:
@@ -180,7 +206,9 @@ patches:
               jafra.io/mode: "continuous"
             annotations:
               jafra.io/containers: "recommendations"
-              jafra.io/chunktime: "5s"
+              jafra.io/profile: "medium"
+              jafra.io/jdk-nmt: "enabled"
+              jafra.io/latency-threshold: "500ms"
   - target:
       kind: Deployment
       name: orders
@@ -194,7 +222,9 @@ patches:
           jafra.io/mode: "continuous"
         annotations:
           jafra.io/containers: "orders"
-          jafra.io/chunktime: "5s"
+          jafra.io/profile: "medium"
+          jafra.io/jdk-nmt: "enabled"
+          jafra.io/latency-threshold: "500ms"
       spec:
         template:
           metadata:
@@ -203,7 +233,9 @@ patches:
               jafra.io/mode: "continuous"
             annotations:
               jafra.io/containers: "orders"
-              jafra.io/chunktime: "5s"
+              jafra.io/profile: "medium"
+              jafra.io/jdk-nmt: "enabled"
+              jafra.io/latency-threshold: "500ms"
   - target:
       kind: Deployment
       name: storefront
@@ -217,7 +249,9 @@ patches:
           jafra.io/mode: "continuous"
         annotations:
           jafra.io/containers: "storefront"
-          jafra.io/chunktime: "5s"
+          jafra.io/profile: "medium"
+          jafra.io/jdk-nmt: "enabled"
+          jafra.io/latency-threshold: "500ms"
       spec:
         template:
           metadata:
@@ -226,4 +260,6 @@ patches:
               jafra.io/mode: "continuous"
             annotations:
               jafra.io/containers: "storefront"
-              jafra.io/chunktime: "5s"
+              jafra.io/profile: "medium"
+              jafra.io/jdk-nmt: "enabled"
+              jafra.io/latency-threshold: "500ms"
